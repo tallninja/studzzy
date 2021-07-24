@@ -13,13 +13,13 @@ public class TestController {
 
         Database.open();
 
-        // testUserController();
-        // testUnitController();
-        // testReminderController();
-        // testCatController();
-        // testExamController();
-        // testReportController();
-        // testAssignmentController();
+         testUserController();
+         testUnitController();
+         testReminderController();
+         testCatController();
+         testExamController();
+         testReportController();
+         testAssignmentController();
 
         Database.close();
 
