@@ -10,18 +10,18 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="504.0" prefWidth="696.0" style="-fx-background-color: #222831;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.LoginController">
+<AnchorPane prefHeight="800.0" prefWidth="930.0" style="-fx-background-color: #222831;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.LoginController">
    <children>
-      <Pane prefHeight="97.0" prefWidth="696.0">
+      <Pane prefHeight="97.0" prefWidth="930.0">
          <children>
-            <Label layoutX="259.0" layoutY="21.0" style="-fx-text-fill: #ffffff;" text="Studzzy">
+            <Label layoutX="376.0" layoutY="21.0" style="-fx-text-fill: #ffffff;" text="Studzzy">
                <font>
                   <Font size="45.0" />
                </font>
             </Label>
          </children>
       </Pane>
-      <Pane layoutX="76.0" layoutY="97.0" prefHeight="387.0" prefWidth="545.0" style="-fx-background-color: #393E46;">
+      <Pane layoutX="193.0" layoutY="190.0" prefHeight="387.0" prefWidth="545.0" style="-fx-background-color: #393E46;">
          <children>
             <TextField fx:id="emailField" layoutX="138.0" layoutY="120.0" prefHeight="36.0" prefWidth="270.0" promptText="user@email.com" style="-fx-background-color: inherit; -fx-border-color: #F05454; -fx-border-width: 0 0 2 0; -fx-padding: 0; -fx-text-fill: white;">
                <font>

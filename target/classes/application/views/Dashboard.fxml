@@ -6,9 +6,9 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane prefHeight="549.0" prefWidth="802.0" style="-fx-background-color: #222831;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.DashboardController">
+<AnchorPane prefHeight="800.0" prefWidth="930.0" style="-fx-background-color: #222831;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.DashboardController">
    <children>
-      <Pane prefHeight="549.0" prefWidth="267.0" style="-fx-background-color: #393E46;" />
+      <Pane prefHeight="800.0" prefWidth="267.0" style="-fx-background-color: #393E46;" />
       <Pane prefHeight="62.0" prefWidth="267.0" style="-fx-border-color: #F05454; -fx-border-width: 0 0 2 0;">
          <children>
             <Label layoutX="67.0" layoutY="13.0" style="-fx-text-fill: white;" text="Studzzy">
@@ -18,7 +18,7 @@
             </Label>
          </children>
       </Pane>
-      <Label layoutX="489.0" layoutY="257.0" style="-fx-text-fill: white;" text="Dashboard">
+      <Label layoutX="507.0" layoutY="382.0" style="-fx-text-fill: white;" text="Dashboard">
          <font>
             <Font size="30.0" />
          </font>
