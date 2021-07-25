@@ -17,6 +17,9 @@ public class Exam extends Test {
     public Exam(UUID unit, Date date) {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
+    }
+
+    public void save() {
         ExamController.saveExam(this);
     }
 

@@ -1,5 +1,6 @@
 package application.controllers;
 
+import application.controllers.utils.Password;
 import application.models.*;
 
 import java.sql.Date;
@@ -11,13 +12,14 @@ public class TestController {
 
         Database.open();
 
-         testUserController();
-         testUnitController();
-         testReminderController();
-         testCatController();
-         testExamController();
-         testReportController();
-         testAssignmentController();
+          testUserController();
+          testUnitController();
+          testReminderController();
+          testCatController();
+          testExamController();
+          testReportController();
+          testAssignmentController();
+          testPassword();
 
         Database.close();
 
@@ -43,6 +45,12 @@ public class TestController {
                 "Fake", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
                 "fake@email.com", "fake123");
 
+        user1.save();
+        user2.save();
+        user3.save();
+        user4.save();
+        fakeUser.save();
+
         System.out.printf("%n List all users %n");
 
         List<User> users = UserController.getUsers();
@@ -55,8 +63,7 @@ public class TestController {
         System.out.println("Before Update:  " + UserController.getUser("fake@email.com"));
 
         fakeUser.update("Test", "Test", "Test",
-                "Test", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
-                "fake@email.com", "fake123");
+                "Test", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
 
         System.out.println("After Update:  " + UserController.getUser("fake@email.com"));
 
@@ -80,6 +87,14 @@ public class TestController {
         Unit unit5 = new Unit("IC", "ETI2344", "Mr Omae", 344);
         Unit unit6 = new Unit("Digital Electronics", "ETI3322", "Mr Kelvin Mwongera", 22);
         Unit fake = new Unit("fake", "fake", "fake", 12);
+
+        unit1.save();
+        unit2.save();
+        unit3.save();
+        unit4.save();
+        unit5.save();
+        unit6.save();
+        fake.save();
 
         System.out.printf("%n List of all the units %n");
         List<Unit> units = UnitController.getUnits();
@@ -108,6 +123,11 @@ public class TestController {
         Reminder reminder2 = new Reminder("reminder1", new Date(System.currentTimeMillis()));
         Reminder reminder3 = new Reminder("reminder1", new Date(System.currentTimeMillis()));
         Reminder fake = new Reminder("fake", new Date(System.currentTimeMillis()));
+
+        reminder1.save();
+        reminder2.save();
+        reminder3.save();
+        fake.save();
 
         System.out.printf("%n List of all reminders %n");
         List <Reminder> reminders = ReminderController.getReminders();
@@ -138,6 +158,12 @@ public class TestController {
         Cat cat3 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
         Cat cat4 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
         Cat fake = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
+
+        cat1.save();
+        cat2.save();
+        cat3.save();
+        cat4.save();
+        fake.save();
 
         System.out.printf("%n List of all CATs %n");
         List<Cat> cats = CatController.getCats();
@@ -170,6 +196,12 @@ public class TestController {
         Exam exam4 = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
         Exam fake = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
 
+        exam1.save();
+        exam2.save();
+        exam3.save();
+        exam4.save();
+        fake.save();
+
         System.out.printf("%n List of all exams %n");
         List<Exam> exams = ExamController.getExams();
         assert exams != null;
@@ -200,6 +232,12 @@ public class TestController {
         Report report3 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
         Report report4 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
         Report fake = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
+
+        report1.save();
+        report2.save();
+        report3.save();
+        report4.save();
+        fake.save();
 
         System.out.printf("%n List of all Reports %n");
         List<Report> reports = ReportController.getReports();
@@ -232,6 +270,12 @@ public class TestController {
         Assignment assignment4 = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
         Assignment fake = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
 
+        assignment1.save();
+        assignment2.save();
+        assignment3.save();
+        assignment4.save();
+        fake.save();
+
         System.out.printf("%n List of all Assignments %n");
         List<Assignment> assignments = AssignmentController.getAssignments();
         assert assignments != null;
@@ -249,6 +293,12 @@ public class TestController {
         fake.delete();
         System.out.println("After Update: " + AssignmentController.getAssignment(fake.getUuid()));
 
+    }
+
+    public static void testPassword() {
+        String password = "password";
+        String hash = Password.hash(password);
+        System.out.println(Password.verify(password, hash));
     }
 
 }

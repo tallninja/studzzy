@@ -21,6 +21,9 @@ public class Reminder {
         this.setUuid(UUID.randomUUID());
         this.setDescription(description);
         this.setDate(reminderDate);
+    }
+
+    public void save() {
         ReminderController.saveReminder(this);
     }
 

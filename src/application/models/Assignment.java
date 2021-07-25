@@ -26,6 +26,9 @@ public class Assignment extends Submission {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
+    }
+
+    public void save() {
         AssignmentController.saveAssignment(this);
     }
 

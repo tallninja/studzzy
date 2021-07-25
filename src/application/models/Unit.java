@@ -27,6 +27,9 @@ public class Unit {
         this.setCode(code);
         this.setLecturer(lecturer);
         this.setPages(pages);
+    }
+
+    public void save() {
         UnitController.saveUnit(this);
     }
 

@@ -20,6 +20,9 @@ public class Cat extends Test {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
+    }
+
+    public void save() {
         CatController.saveCat(this);
     }
 

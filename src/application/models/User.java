@@ -1,6 +1,7 @@
 package application.models;
 
 import application.controllers.UserController;
+import application.controllers.utils.Password;
 
 import java.sql.Date;
 
@@ -24,18 +25,20 @@ public class User {
         this.setEndSemDate(endSemDate);
         this.setEmail(email);
         this.setPassword(password);
+    }
+
+    public void save() {
+        this.setPassword(Password.hash(this.getPassword()));
         UserController.saveUser(this);
     }
 
-    public void update(String firstName, String lastName, String registrationNumber, String university, Date startSemDate, Date endSemDate, String email, String password) {
+    public void update(String firstName, String lastName, String registrationNumber, String university, Date startSemDate, Date endSemDate) {
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setRegistrationNumber(registrationNumber);
         this.setUniversity(university);
         this.setStartSemDate(startSemDate);
         this.setEndSemDate(endSemDate);
-        this.setEmail(email);
-        this.setPassword(password);
         UserController.editUser(this);
     }
 

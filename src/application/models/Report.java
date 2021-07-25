@@ -25,6 +25,9 @@ public class Report extends  Submission {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
+    }
+
+    public void save() {
         ReportController.saveReport(this);
     }
 

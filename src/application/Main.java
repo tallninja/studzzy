@@ -1,5 +1,6 @@
 package application;
 
+import application.models.Database;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,12 +11,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("./views/application.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.show();
-    }
 
+        Database.open();
+
+        Parent root = FXMLLoader.load(getClass().getResource("./views/Login.fxml"));
+        primaryStage.setTitle("Studzzy");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.centerOnScreen();
+        primaryStage.setFullScreen(false);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+
+        Database.close();
+    }
 
     public static void main(String[] args) {
         launch(args);
