@@ -16,12 +16,13 @@ public class Main extends Application {
         Database.open();
 
         Parent root = FXMLLoader.load(getClass().getResource("./views/Login.fxml"));
+        Scene scene = new Scene(root);
 
         Image appIcon = new Image("studzzy-icon.png");
         primaryStage.getIcons().add(appIcon);
 
         primaryStage.setTitle("Studzzy");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);

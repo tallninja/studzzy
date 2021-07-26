@@ -1,5 +1,6 @@
-package application.controllers;
+package application.controllers.views;
 
+import application.controllers.UserController;
 import application.controllers.utils.Password;
 import application.models.User;
 import javafx.event.ActionEvent;
@@ -38,7 +39,7 @@ public class LoginController {
 
             if (login(emailField.getText(), passwordField.getText())) {
 
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/Dashboard.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/Home.fxml"));
                 root = loader.load();
                 scene = new Scene(root);
                 stage = (Stage) ( (Node) event.getSource() ).getScene().getWindow();
@@ -68,7 +69,7 @@ public class LoginController {
 
     public void createAccount(ActionEvent event) throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/CreateAccount.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/CreateAccount.fxml"));
         root = loader.load();
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

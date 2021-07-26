@@ -1,4 +1,4 @@
-package application.controllers;
+package application.controllers.views;
 
 import application.controllers.utils.DateStringConverter;
 import application.models.User;

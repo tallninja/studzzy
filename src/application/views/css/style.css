@@ -1,20 +1,78 @@
-.button
-{
-    -fx-background-color : #F3F3F3;
+.scene {
+    -fx-background-color:  #222831;
 }
-.button:hover
-{
-    -fx-background-color : #A1C1F4 ;
+
+.header-pane {
+    -fx-border-color: #F05454;
+    -fx-border-width: 0 0 3 0;
 }
-.button:pressed
-{
-    -fx-background-color : #73A3EF ;
+
+.cta {
+    -fx-background-color:  #393E46;
+}
+
+.cta-header {
+    -fx-text-fill: white;
+    -fx-font-size: 32;
+}
+
+.cta-pane {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 2 0;
+}
+
+.cta-text-field {
+    -fx-background-color: inherit;
+    -fx-border-color:  #F05454;
+    -fx-border-width: 0 0 2 0;
+    -fx-text-fill: white;
+    -fx-padding: 0;
+}
+
+.cta-date-picker {
+    -fx-border-width: 0;
+}
+
+.cta-button {
+    -fx-background-color: #F05454;
+    -fx-text-fill: white;
+}
+
+.cta-button:hover {
+    -fx-background-color: #F04454;
+}
+
+.grid-pane-button {
+    -fx-background-color: inherit;
+    -fx-text-fill: white;
+    -fx-font-size: 30;
+    -fx-border-color: #F05454;
+    -fx-border-width: 0 0 2 0;
+}
+
+.grid-pane-button:hover {
+    -fx-background-color: #F05454;
+    -fx-text-fill: white;
+}
+
+.link-button {
+    -fx-background-color: inherit;
+    -fx-text-fill: white;
+}
+
+.brand-label {
+    -fx-text-fill: white;
+    -fx-font-size: 45;
+}
+
+.table-view {
+    -fx-background-color: inherit;
 }
 
 .table-view .column-header,
 .table-view .column-header-background .filler {
     -fx-cell-size : 20;
-    -fx-background-color:   #2D75E8;
+    -fx-background-color: #222831;
 }
 .table-view .column-header .label{
 
@@ -25,12 +83,14 @@
 .table-view .cell{
     -fx-cell-size: 30;
     -fx-alignment: center-left;
-    -fx-text-fill: #000000;
-    -fx-alignment: CENTER_LEFT;
+    -fx-background-color: inherit;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
 }
 
 .table-row-cell:selected {
-    -fx-background-color:  rgb(127, 172, 243);
+    -fx-background-color:  #F05454;
 }
 .table-row-cell:selected .text {
     -fx-fill : white ;
@@ -49,7 +109,7 @@
 .table-view .scroll-bar:horizontal .track,
 .table-view .scroll-bar:vertical .track{
     -fx-background-color: transparent;
-    -fx-border-color:derive(  #2D75E8,80%);
+    -fx-border-color:derive(#F05454,80%);
     -fx-background-radius: 2em;
     -fx-border-radius:2em;
 }
@@ -57,24 +117,8 @@
 /* The main scrollbar **thumb** CSS class which we drag every time (movable) */
 .table-view .scroll-bar:horizontal .thumb,
 .table-view .scroll-bar:vertical .thumb {
-    -fx-background-color:derive( #2D75E8,90%);
+    -fx-background-color:derive(#F05454,90%);
     -fx-background-insets: 2, 0, 0;
     -fx-background-radius: 2em;
 
-}
-
-/* chart properties */
-
-.chart {
-    -fx-padding: 10px;
-    -fx-background-color: transparent;
-    -fx-legend-visible: false;
-}
-.chart-plot-background {
-    -fx-background-color:transparent;
-}
-
-.chart-pie {
-    -fx-border-color: derive(-fx-pie-color, 1%);
-    -fx-border-width: 0px;
 }

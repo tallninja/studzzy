@@ -10,20 +10,20 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="930.0" style="-fx-background-color: #222831;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.LoginController">
+<AnchorPane prefHeight="800.0" prefWidth="930.0" styleClass="scene" stylesheets="@./css/style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.views.LoginController">
    <children>
-      <Pane prefHeight="97.0" prefWidth="930.0">
+      <Pane prefHeight="97.0" prefWidth="930.0" styleClass="header-pane">
          <children>
-            <Label layoutX="376.0" layoutY="21.0" style="-fx-text-fill: #ffffff;" text="Studzzy">
+            <Label layoutX="376.0" layoutY="21.0" styleClass="brand-label" text="Studzzy">
                <font>
                   <Font size="45.0" />
                </font>
             </Label>
          </children>
       </Pane>
-      <Pane layoutX="193.0" layoutY="190.0" prefHeight="387.0" prefWidth="545.0" style="-fx-background-color: #393E46;">
+      <Pane layoutX="193.0" layoutY="190.0" prefHeight="387.0" prefWidth="545.0" styleClass="cta">
          <children>
-            <TextField fx:id="emailField" layoutX="138.0" layoutY="120.0" prefHeight="36.0" prefWidth="270.0" promptText="user@email.com" style="-fx-background-color: inherit; -fx-border-color: #F05454; -fx-border-width: 0 0 2 0; -fx-padding: 0; -fx-text-fill: white;">
+            <TextField fx:id="emailField" layoutX="138.0" layoutY="120.0" prefHeight="36.0" prefWidth="270.0" promptText="user@email.com" styleClass="cta-text-field">
                <font>
                   <Font size="18.0" />
                </font>
@@ -38,7 +38,7 @@
                   <Font size="22.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordField" layoutX="141.0" layoutY="205.0" prefHeight="36.0" prefWidth="270.0" promptText="***" style="-fx-background-color: inherit; -fx-border-color: #F05454; -fx-border-width: 0 0 2 0; -fx-padding: 0; -fx-text-fill: white;">
+            <PasswordField fx:id="passwordField" layoutX="141.0" layoutY="205.0" prefHeight="36.0" prefWidth="270.0" promptText="***" styleClass="cta-text-field">
                <font>
                   <Font size="18.0" />
                </font>
@@ -46,12 +46,12 @@
       
       <!--      <FontAwesomeIconView fill="WHITE" glyphName="USER" layoutX="294.0" layoutY="186.0" size="20" wrappingWidth="19.300000190734863" />-->
       <!--      <FontAwesomeIconView fill="WHITE" glyphName="KEY" layoutX="341.0" layoutY="273.0" size="20" wrappingWidth="19.300000190734863" />-->
-            <Button fx:id="loginButton" layoutX="138.0" layoutY="287.0" mnemonicParsing="false" onAction="#loginUser" prefHeight="30.0" prefWidth="270.0" style="-fx-background-color: #F05454; -fx-text-fill: #ffffff; -fx-border-radius: 0px;" text="Login">
+            <Button fx:id="loginButton" layoutX="138.0" layoutY="287.0" mnemonicParsing="false" onAction="#loginUser" prefHeight="30.0" prefWidth="270.0" styleClass="cta-button" text="Login">
                <font>
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="createAccountButton" layoutX="135.0" layoutY="345.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="30.0" prefWidth="270.0" style="-fx-background-color: inherit; -fx-text-fill: #ffffff; -fx-border-radius: 0px;" text="Create Account">
+            <Button fx:id="createAccountButton" layoutX="135.0" layoutY="345.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="30.0" prefWidth="270.0" styleClass="link-button" text="Create Account">
                <font>
                   <Font size="14.0" />
                </font>
@@ -61,9 +61,9 @@
                   <Font size="10.0" />
                </font>
             </Label>
-            <Pane prefHeight="64.0" prefWidth="545.0" style="-fx-border-color: white; -fx-border-width: 0 0 2 0;">
+            <Pane prefHeight="64.0" prefWidth="545.0" styleClass="cta-pane">
                <children>
-                  <Label layoutX="135.0" layoutY="12.0" style="-fx-text-fill: #ffffff;" text="Login">
+                  <Label layoutX="135.0" layoutY="12.0" styleClass="cta-header" text="Login">
                      <font>
                         <Font size="34.0" />
                      </font>

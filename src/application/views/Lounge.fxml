@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="930.0" styleClass="scene" stylesheets="@css/style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.views.LoungeController">
+    <children>
+        <Pane prefHeight="700.0" prefWidth="267.0" style="-fx-background-color: #393E46;">
+            <children>
+                <GridPane layoutY="61.0" prefHeight="640.0" prefWidth="267.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Button fx:id="homeButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Home" />
+                        <Button fx:id="unitsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Units" GridPane.rowIndex="1" />
+                        <Button fx:id="remindersButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Reminders" GridPane.rowIndex="2" />
+                        <Button fx:id="testsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Tests" GridPane.rowIndex="3" />
+                        <Button fx:id="submissionsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Submissions" GridPane.rowIndex="4" />
+                        <Button fx:id="loungeButton" mnemonicParsing="false" prefHeight="122.0" prefWidth="267.0" style="-fx-background-color: #222831;" styleClass="grid-pane-button" text="Lounge" GridPane.rowIndex="5" />
+                    </children>
+                </GridPane>
+            </children></Pane>
+        <Pane prefHeight="62.0" prefWidth="267.0" styleClass="header-pane">
+            <children>
+                <Label layoutX="7.0" layoutY="13.0" style="-fx-text-fill: #FFD369;" text="Studzzy">
+                    <font>
+                        <Font size="30.0" />
+                    </font>
+                </Label>
+                <Button fx:id="logoutButton" layoutX="158.0" layoutY="9.0" mnemonicParsing="false" onAction="#logoutUser" prefHeight="40.0" prefWidth="95.0" styleClass="cta-button" text="Logout">
+                    <font>
+                        <Font size="17.0" />
+                    </font>
+                </Button>
+            </children>
+        </Pane>
+        <Pane layoutX="267.0" prefHeight="700.0" prefWidth="664.0">
+            <children>
+                <Label layoutX="285.0" layoutY="350.0" styleClass="cta-header" text="Lounge" />
+            </children>
+        </Pane>
+    </children>
+</AnchorPane>
