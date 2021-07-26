@@ -85,17 +85,9 @@
     -fx-alignment: center-left;
     -fx-background-color: inherit;
     -fx-text-fill: white;
-    -fx-border-color: white;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-width: 0;
 }
 
-.table-row-cell:selected {
-    -fx-background-color:  #F05454;
-}
-.table-row-cell:selected .text {
-    -fx-fill : white ;
-
-}
 /* scroll bar starts here */
 
 /* The increment and decrement button CSS class of scrollbar */
@@ -121,4 +113,14 @@
     -fx-background-insets: 2, 0, 0;
     -fx-background-radius: 2em;
 
+}
+
+.cta-dialog-box {
+    -fx-border-width: 2;
+    -fx-border-color: #F05454;
+    -fx-background-color: #393E46;
+}
+
+.cta-dialog-box .header-pane {
+    -fx-background-color: inherit;
 }
