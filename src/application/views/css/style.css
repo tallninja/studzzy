@@ -21,6 +21,10 @@
     -fx-border-width: 0 0 2 0;
 }
 
+.cta-text-field-label {
+    -fx-text-fill: white;
+}
+
 .cta-text-field {
     -fx-background-color: inherit;
     -fx-border-color:  #F05454;

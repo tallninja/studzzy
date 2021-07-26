@@ -20,6 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -72,56 +73,92 @@ public class UnitsController implements Initializable {
     @FXML
     DialogPane dialogPane;
 
-    ObservableList<Unit> unitsObservableList = FXCollections.observableArrayList();
+    @FXML
+    TextField unitNameField;
+
+    @FXML
+    TextField unitCodeField;
+
+    @FXML
+    TextField lecturerField;
+
+    @FXML
+    Spinner<Integer> numberOfPagesField;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        List<Unit> units = UnitController.getUnits();
+        ObservableList<Unit> unitsObservableList = FXCollections.observableArrayList();
 
-        assert  units != null;
-        unitsObservableList.addAll(units);
+        if(unitNameCol != null && unitCodeCol != null && lecturerCol != null && pagesCol != null) {
+            List<Unit> units = UnitController.getUnits();
 
-        unitNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        unitCodeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
-        lecturerCol.setCellValueFactory(new PropertyValueFactory<>("lecturer"));
-        pagesCol.setCellValueFactory(new PropertyValueFactory<>("code"));
+            assert units != null;
+            unitsObservableList.addAll(units);
 
-        unitsTable.setItems(unitsObservableList);
 
-        FilteredList<Unit> filteredUnits = new FilteredList<>(unitsObservableList, b -> true);
+            unitNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            unitCodeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
+            lecturerCol.setCellValueFactory(new PropertyValueFactory<>("lecturer"));
+            pagesCol.setCellValueFactory(new PropertyValueFactory<>("pages"));
 
-        // adding a change listener to the search text field
-        searchTextField.textProperty().addListener((observableValue, oldValue, newValue) -> filteredUnits.setPredicate(unitItems -> {
+            unitsTable.setItems(unitsObservableList);
 
-            // if the search-field is empty then return all the values
-            if (newValue.isEmpty() || newValue.isBlank()) {
-                return true;
-            }
+            FilteredList<Unit> filteredUnits = new FilteredList<>(unitsObservableList, b -> true);
 
-            String searchKeyword = newValue.toLowerCase();
+            // adding a change listener to the search text field
+            searchTextField.textProperty().addListener((observableValue, oldValue, newValue) -> filteredUnits.setPredicate(unitItems -> {
 
-            if(unitItems.getName().toLowerCase().contains(searchKeyword)) {
-                return true;
-            } else if (unitItems.getLecturer().toLowerCase().contains(searchKeyword)) {
-                return true;
-            } else if (unitItems.getCode().contains(searchKeyword)) {
-                return true;
-            } else {
-                return false;
-            }
+                // if the search-field is empty then return all the values
+                if (newValue.isEmpty() || newValue.isBlank()) {
+                    return true;
+                }
 
-        }));
+                String searchKeyword = newValue.toLowerCase();
 
-        SortedList<Unit> sortedData = new SortedList<>(filteredUnits);
+                if (unitItems.getName().toLowerCase().contains(searchKeyword)) {
+                    return true;
+                } else if (unitItems.getLecturer().toLowerCase().contains(searchKeyword)) {
+                    return true;
+                } else if (unitItems.getCode().contains(searchKeyword)) {
+                    return true;
+                } else {
+                    return false;
+                }
 
-        sortedData.comparatorProperty().bind(unitsTable.comparatorProperty());
+            }));
 
-        unitsTable.setItems(sortedData);
+            SortedList<Unit> sortedData = new SortedList<>(filteredUnits);
+
+            sortedData.comparatorProperty().bind(unitsTable.comparatorProperty());
+
+            unitsTable.setItems(sortedData);
+        }
+
+        if (numberOfPagesField != null) {
+            SpinnerValueFactory<Integer> spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5000);
+            spinnerValueFactory.setValue(0);
+            numberOfPagesField.setValueFactory(spinnerValueFactory);
+        }
     }
 
-    public void addUnit(ActionEvent event) {
+    public void addUnit(ActionEvent event) throws IOException {
+        setModal("UnitModal.fxml", event);
+    }
 
+    public void createUnit(ActionEvent event) {
+        String unitName = unitNameField.getText();
+        String unitCode = unitCodeField.getText();
+        String unitLecturer = lecturerField.getText();
+        int numOfPages = numberOfPagesField.getValue();
+
+        if (!unitName.equals("") && !unitCode.equals("") && !unitLecturer.equals("")) {
+            Unit unit = new Unit(unitName, unitCode, unitLecturer, numOfPages);
+            unit.save();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
+        }
     }
 
     public void deleteUnit(ActionEvent event) {
@@ -162,6 +199,23 @@ public class UnitsController implements Initializable {
         scene = new Scene(root);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
+        stage.show();
+    }
+
+    // creates a popup window
+    public void setModal(String resource, ActionEvent event) throws  IOException {
+
+        String fxmlPath = String.format("../../views/modals/%s", resource);
+        Parent root = FXMLLoader.load(UnitsController.class.getResource(fxmlPath));
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Studzzy");
+        stage.centerOnScreen();
+        stage.setResizable(false);
+        stage.setFullScreen(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(( (Node) event.getSource() ).getScene().getWindow());
         stage.show();
     }
 
