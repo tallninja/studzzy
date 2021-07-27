@@ -70,7 +70,7 @@ public class ExamController {
                         TABLE_EXAMS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());
-                statement.setObject(2, exam.getUnit());
+                statement.setObject(2, exam.getUnit().getUuid());
                 statement.setDate(3, exam.getDate());
                 statement.executeUpdate();
             }
@@ -98,13 +98,17 @@ public class ExamController {
         try {
 
             if (checkCatExists(uuid)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_EXAMS, COLUMN_UUID);
+                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, exams.uuid, exams.unit, exams.date FROM units INNER JOIN exams ON units.uuid=unit WHERE exams.uuid=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    return new Exam((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE));
+                    Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                            results.getString("code"), results.getString("lecturer"),
+                            results.getInt("pages"));
+
+                    return new Exam((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE));
                 } else {
                     return null;
                 }
@@ -136,12 +140,17 @@ public class ExamController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_EXAMS);
+            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, exams.uuid, exams.unit, exams.date FROM units INNER JOIN exams ON units.uuid=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                cats.add(new Exam((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT),
+
+                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                        results.getString("code"), results.getString("lecturer"),
+                        results.getInt("pages"));
+
+                cats.add(new Exam((UUID) results.getObject(COLUMN_UUID), unit,
                                     results.getDate(COLUMN_DATE)));
             }
 

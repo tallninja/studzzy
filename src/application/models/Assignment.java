@@ -16,13 +16,13 @@ public class Assignment extends Submission {
     private UUID uuid;
     private int type;
 
-    public Assignment(UUID uuid, UUID unit, Date date, int type) {
+    public Assignment(UUID uuid, Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Assignment(UUID unit, Date date, int type) {
+    public Assignment(Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);

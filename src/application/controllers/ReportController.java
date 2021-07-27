@@ -71,7 +71,7 @@ public class ReportController {
                         TABLE_REPORTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUuid());
-                statement.setObject(2, report.getUnit());
+                statement.setObject(2, report.getUnit().getUuid());
                 statement.setDate(3, report.getDate());
                 statement.setInt(4, report.getType());
                 statement.executeUpdate();
@@ -100,13 +100,17 @@ public class ReportController {
         try {
 
             if (checkReportExists(uuid)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_REPORTS, COLUMN_UUID);
+                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, reports.uuid, reports.unit, reports.date, reports.type FROM units INNER JOIN reports ON units.uuid=unit WHERE reports.uuid=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    return new Report((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
+                    Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                            results.getString("code"), results.getString("lecturer"),
+                            results.getInt("pages"));
+
+                    return new Report((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
                 } else {
                     return null;
                 }
@@ -134,20 +138,24 @@ public class ReportController {
 
         assert conn != null;
         String sqlStatement;
-        List<Report> cats = new ArrayList<>();
+        List<Report> reports = new ArrayList<>();
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_REPORTS);
+            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, reports.uuid, reports.unit, reports.date, reports.type FROM units INNER JOIN reports ON units.uuid=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                cats.add(new Report((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE),
+                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                        results.getString("code"), results.getString("lecturer"),
+                        results.getInt("pages"));
+
+                reports.add(new Report((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE),
                         results.getInt(COLUMN_TYPE)));
             }
 
-            return cats;
+            return reports;
 
         } catch (Exception e) {
             System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());

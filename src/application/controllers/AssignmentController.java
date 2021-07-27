@@ -71,7 +71,7 @@ public class AssignmentController {
                         TABLE_ASSIGNMENTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUuid());
-                statement.setObject(2, assignment.getUnit());
+                statement.setObject(2, assignment.getUnit().getUuid());
                 statement.setDate(3, assignment.getDate());
                 statement.setInt(4, assignment.getType());
                 statement.executeUpdate();
@@ -100,13 +100,17 @@ public class AssignmentController {
         try {
 
             if (checkAssignmentExists(uuid)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_UUID);
+                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, assignments.uuid, assignments.unit, assignments.date, assignments.type FROM units INNER JOIN assignments ON units.uuid=unit WHERE assignments.uuid=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    return new Assignment((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
+                    Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                            results.getString("code"), results.getString("lecturer"),
+                            results.getInt("pages"));
+
+                    return new Assignment((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
                 } else {
                     return null;
                 }
@@ -138,12 +142,16 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_ASSIGNMENTS);
+            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, assignments.uuid, assignments.unit, assignments.date, assignments.type FROM units INNER JOIN assignments ON units.uuid=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                cats.add(new Assignment((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE),
+                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                        results.getString("code"), results.getString("lecturer"),
+                        results.getInt("pages"));
+
+                cats.add(new Assignment((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE),
                         results.getInt(COLUMN_TYPE)));
             }
 

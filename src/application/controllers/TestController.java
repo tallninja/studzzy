@@ -153,11 +153,11 @@ public class TestController {
         assert units != null;
 
         CatController.dropTable();
-        Cat cat1 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Cat cat2 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Cat cat3 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Cat cat4 = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Cat fake = new Cat(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
+        Cat cat1 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Cat cat2 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Cat cat3 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Cat cat4 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Cat fake = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         cat1.save();
         cat2.save();
@@ -190,11 +190,11 @@ public class TestController {
         assert units != null;
 
         ExamController.dropTable();
-        Exam exam1 = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
-        Exam exam2 = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
-        Exam exam3 = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
-        Exam exam4 = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
-        Exam fake = new Exam(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()));
+        Exam exam1 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam2 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam3 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam4 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam fake = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
 
         exam1.save();
         exam2.save();
@@ -227,11 +227,11 @@ public class TestController {
         assert units != null;
 
         ReportController.dropTable();
-        Report report1 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Report report2 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Report report3 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Report report4 = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Report fake = new Report(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
+        Report report1 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Report report2 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Report report3 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Report report4 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Report fake = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         report1.save();
         report2.save();
@@ -264,11 +264,11 @@ public class TestController {
         assert units != null;
 
         AssignmentController.dropTable();
-        Assignment assignment1 = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Assignment assignment2 = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Assignment assignment3 = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
-        Assignment assignment4 = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 2);
-        Assignment fake = new Assignment(units.get((int) (Math.random() * units.size())).getUuid(), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment1 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment2 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Assignment assignment3 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment4 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Assignment fake = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         assignment1.save();
         assignment2.save();

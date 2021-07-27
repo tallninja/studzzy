@@ -13,6 +13,7 @@ import java.util.UUID; // Universally Unique ID
 
 public class CatController {
 
+    private static final String TABLE_UNITS="units";
     private static final String TABLE_CATS = "cats";
     private static final String COLUMN_UUID = "uuid";
     private static final String COLUMN_UNIT = "unit";
@@ -71,7 +72,7 @@ public class CatController {
                                             TABLE_CATS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());
-                statement.setObject(2, cat.getUnit());
+                statement.setObject(2, cat.getUnit().getUuid());
                 statement.setDate(3, cat.getDate());
                 statement.setInt(4, cat.getType());
                 statement.executeUpdate();
@@ -100,13 +101,17 @@ public class CatController {
         try {
 
             if (checkCatExists(uuid)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_CATS, COLUMN_UUID);
+                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, cats.uuid, cats.unit, cats.date, cats.type FROM units INNER JOIN cats ON units.uuid=unit WHERE cats.uuid=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    return new Cat((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
+                        Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                                        results.getString("code"), results.getString("lecturer"),
+                                        results.getInt("pages"));
+
+                    return new Cat((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
                 } else {
                     return null;
                 }
@@ -138,12 +143,16 @@ public class CatController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_CATS);
+            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, cats.uuid, cats.unit, cats.date, cats.type FROM units INNER JOIN cats ON units.uuid=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                cats.add(new Cat((UUID) results.getObject(COLUMN_UUID), (UUID) results.getObject(COLUMN_UNIT), results.getDate(COLUMN_DATE),
+                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                        results.getString("code"), results.getString("lecturer"),
+                        results.getInt("pages"));
+
+                cats.add(new Cat((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE),
                                         results.getInt(COLUMN_TYPE)));
             }
 

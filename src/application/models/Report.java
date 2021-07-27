@@ -15,13 +15,13 @@ public class Report extends  Submission {
     private UUID uuid;
     private int type;
 
-    public Report(UUID uuid, UUID unit, Date date, int type) {
+    public Report(UUID uuid, Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Report(UUID unit, Date date, int type) {
+    public Report(Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);

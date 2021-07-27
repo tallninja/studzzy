@@ -8,24 +8,24 @@ import java.util.UUID;
 
 public class Submission implements Remindable {
 
-    private UUID unit;
+    private Unit unit;
     private Date date;
 
-    public Submission(UUID unit, Date date) {
+    public Submission(Unit unit, Date date) {
         this.setUnit(unit);
         this.setDate(date);
     }
 
-    public UUID getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 
-    public void setUnit(UUID unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
     public Unit getUnitObject() {
-        return UnitController.getUnit(unit);
+        return UnitController.getUnit(unit.getUuid());
     }
 
     @Override
