@@ -15,10 +15,7 @@ public class Test implements Remindable {
         this.setDate(date);
     }
 
-    @Override
-    public void setReminder(String description) {
-        Reminder.setReminder(description, this.getDate());
-    }
+
 
     public Unit getUnitObject() {
         return UnitController.getUnit(unit);
@@ -35,6 +32,11 @@ public class Test implements Remindable {
     @Override
     public Date getDate() {
         return date;
+    }
+
+    @Override
+    public void setReminder() {
+
     }
 
     @Override

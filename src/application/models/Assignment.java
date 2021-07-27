@@ -30,6 +30,7 @@ public class Assignment extends Submission {
 
     public void save() {
         AssignmentController.saveAssignment(this);
+        this.setReminder();
     }
 
     public void update(Date date, int type) {
@@ -41,6 +42,13 @@ public class Assignment extends Submission {
 
     public void delete() {
         AssignmentController.deleteAssignment(this);
+    }
+
+    @Override
+    public void  setReminder() {
+        String description = String.format("%s ASSIGNMENT", this.getUnitObject().getName());
+        Reminder reminder = new Reminder(description, this.getDate());
+        reminder.save();
     }
 
     @Override

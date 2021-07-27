@@ -29,6 +29,7 @@ public class Report extends  Submission {
 
     public void save() {
         ReportController.saveReport(this);
+        this.setReminder();
     }
 
     public void update(Date date, int type) {
@@ -40,6 +41,13 @@ public class Report extends  Submission {
 
     public void delete() {
         ReportController.deleteReport(this);
+    }
+
+    @Override
+    public void  setReminder() {
+        String description = String.format("%s REPORT", this.getUnitObject().getName());
+        Reminder reminder = new Reminder(description, this.getDate());
+        reminder.save();
     }
 
     @Override

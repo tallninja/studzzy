@@ -34,8 +34,8 @@ public class Submission implements Remindable {
     }
 
     @Override
-    public void setReminder(String description) {
-        Reminder.setReminder(description, this.getDate());
+    public void setReminder() {
+
     }
 
     @Override

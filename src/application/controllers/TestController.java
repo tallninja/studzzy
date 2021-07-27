@@ -14,7 +14,7 @@ public class TestController {
 
           testUserController();
           testUnitController();
-          testReminderController();
+          // testReminderController();
           testCatController();
           testExamController();
           testReportController();
@@ -31,7 +31,7 @@ public class TestController {
 
         User user1 = new User("Ernest", "Wambua", "ENE221-0106/2018",
                             "JKUAT", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
-                                "ernestwambua2@gmail.com", "password123");
+                                "ernestwambua2@gmail.com", "ilove x123");
         User user2 = new User("Junn", "Hope", "ENE221-0101/2018",
                 "UON", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
                 "junnhope2@gmail.com", "cake123");

@@ -24,6 +24,7 @@ public class Cat extends Test {
 
     public void save() {
         CatController.saveCat(this);
+        this.setReminder();
     }
 
     public void update(Date date, int type) {
@@ -43,6 +44,13 @@ public class Cat extends Test {
             case 2 -> "take-away";
             default -> "invalid-type";
         };
+    }
+
+    @Override
+    public void  setReminder() {
+        String description = String.format("%s CAT", this.getUnitObject().getName());
+        Reminder reminder = new Reminder(description, this.getDate());
+        reminder.save();
     }
 
     @Override

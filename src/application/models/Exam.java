@@ -21,6 +21,7 @@ public class Exam extends Test {
 
     public void save() {
         ExamController.saveExam(this);
+        this.setReminder();
     }
 
     public void update(Date date) {
@@ -31,6 +32,13 @@ public class Exam extends Test {
 
     public void delete() {
         ExamController.deleteExam(this);
+    }
+
+    @Override
+    public void  setReminder() {
+        String description = String.format("%s EXAM", this.getUnitObject().getName());
+        Reminder reminder = new Reminder(description, this.getDate());
+        reminder.save();
     }
 
     @Override
