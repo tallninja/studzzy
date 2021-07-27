@@ -7,10 +7,10 @@ import java.util.UUID;
 
 public class Test implements Remindable {
 
-    private UUID unit;
+    private Unit unit;
     private Date date;
 
-    public Test(UUID unit, Date date) {
+    public Test(Unit unit, Date date) {
         this.setUnit(unit);
         this.setDate(date);
     }
@@ -18,14 +18,14 @@ public class Test implements Remindable {
 
 
     public Unit getUnitObject() {
-        return UnitController.getUnit(unit);
+        return UnitController.getUnit(unit.getUuid());
     }
 
-    public UUID getUnit() {
+    public Unit getUnit() {
         return this.unit;
     }
 
-    public void setUnit(UUID unit) {
+    public void setUnit(Unit unit) {
         this.unit = unit;
     }
 

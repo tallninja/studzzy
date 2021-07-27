@@ -37,6 +37,10 @@ public class DateStringConverter extends StringConverter<LocalDate> {
         }
     }
 
+    public java.sql.Date fromStringToDate(String date) {
+        return new java.sql.Date(this.toMills(this.fromString(date)));
+    }
+
     public long toMills(LocalDate localDate) {
         Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         return date.getTime();

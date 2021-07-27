@@ -10,13 +10,13 @@ public class Cat extends Test {
     private UUID uuid;
     private int type;
 
-    public Cat(UUID uuid, UUID unit, Date date, int type) {
+    public Cat(UUID uuid, Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Cat(UUID unit, Date date, int type) {
+    public Cat(Unit unit, Date date, int type) {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
@@ -44,6 +44,14 @@ public class Cat extends Test {
             case 2 -> "take-away";
             default -> "invalid-type";
         };
+    }
+
+    public void setTypeFromString(String type) {
+        switch (type) {
+            case "sitting" -> this.setType(1);
+            case "take-away" -> this.setType(2);
+            default -> this.setType(1);
+        }
     }
 
     @Override

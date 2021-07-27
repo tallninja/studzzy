@@ -46,6 +46,17 @@
     -fx-background-color: #F04454;
 }
 
+
+.cta-dialog-box {
+    -fx-border-width: 2;
+    -fx-border-color: #F05454;
+    -fx-background-color: #393E46;
+}
+
+.cta-dialog-box .header-pane {
+    -fx-background-color: inherit;
+}
+
 .grid-pane-button {
     -fx-background-color: inherit;
     -fx-text-fill: white;
@@ -133,15 +144,5 @@
 .table-action-button-edit {
     -fx-text-fill: white;
     -fx-background-color: #FAFF00;
-}
-
-.cta-dialog-box {
-    -fx-border-width: 2;
-    -fx-border-color: #F05454;
-    -fx-background-color: #393E46;
-}
-
-.cta-dialog-box .header-pane {
-    -fx-background-color: inherit;
 }
 

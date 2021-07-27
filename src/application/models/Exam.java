@@ -9,12 +9,12 @@ public class Exam extends Test {
 
     private UUID uuid;
 
-    public Exam(UUID uuid, UUID unit, Date date) {
+    public Exam(UUID uuid, Unit unit, Date date) {
         super(unit, date);
         this.setUuid(uuid);
     }
 
-    public Exam(UUID unit, Date date) {
+    public Exam(Unit unit, Date date) {
         super(unit, date);
         this.setUuid(UUID.randomUUID());
     }
