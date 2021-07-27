@@ -10,7 +10,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
-import javafx.event.EventTarget;
+import javafx.event.EventHandler;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class UnitsController implements Initializable {
 
@@ -102,13 +104,33 @@ public class UnitsController implements Initializable {
             assert units != null;
             unitsObservableList.addAll(units);
 
+            Callback<TableColumn<Unit, String>, TableCell<Unit, String>> editCellFactory =
+                    p -> new EditingCell();
 
             unitNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            unitNameCol.setCellFactory(editCellFactory);
+            unitNameCol.setOnEditCommit(
+                    t -> t.getTableView().getItems().get(
+                            t.getTablePosition().getRow()).setName(t.getNewValue())
+            );
+
             unitCodeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
+            unitCodeCol.setCellFactory(editCellFactory);
+            unitCodeCol.setOnEditCommit(
+                    t -> t.getTableView().getItems().get(
+                            t.getTablePosition().getRow()).setCode(t.getNewValue())
+            );
+
             lecturerCol.setCellValueFactory(new PropertyValueFactory<>("lecturer"));
+            lecturerCol.setCellFactory(editCellFactory);
+            lecturerCol.setOnEditCommit(
+                    t -> t.getTableView().getItems().get(
+                            t.getTablePosition().getRow()).setLecturer(t.getNewValue())
+            );
+
             pagesCol.setCellValueFactory(new PropertyValueFactory<>("pages"));
 
-            Callback<TableColumn<Unit, Button>, TableCell<Unit, Button>> editCellFactory
+            Callback<TableColumn<Unit, Button>, TableCell<Unit, Button>> saveChangesCellFactory
                     = //
                     new Callback<>() {
                         @Override
@@ -122,7 +144,7 @@ public class UnitsController implements Initializable {
                                         setGraphic(null);
                                     } else {
 
-                                        Button actionButton = new Button("Edit");
+                                        Button actionButton = new Button("Save");
                                         actionButton.getStyleClass().add("cta-button");
                                         actionButton.setMaxWidth(Double.MAX_VALUE);
 
@@ -170,7 +192,7 @@ public class UnitsController implements Initializable {
                         }
                     };
 
-            editActionCol.setCellFactory(editCellFactory);
+            editActionCol.setCellFactory(saveChangesCellFactory);
 
             deleteActionCol.setCellFactory(deleteCellFactory);
 
@@ -205,18 +227,7 @@ public class UnitsController implements Initializable {
     }
 
     public void editUnit(Unit unit, ActionEvent event) {
-
-        setModal("UnitModal.fxml", "Edit Unit", event);
-
-        if(unitNameField != null && unitCodeCol != null && lecturerField != null && numberOfPagesField != null) {
-            unitNameField.setText(unit.getName());
-            unitCodeField.setText(unit.getCode());
-            lecturerField.setText(unit.getLecturer());
-            numberOfPagesField.getValueFactory().setValue(unit.getPages());
-
-        }
-
-        setModal("UnitModal.fxml", "Edit Unit", event);
+        UnitController.editUnit(unit);
     }
 
     public void deleteUnit(Unit unit, ActionEvent event) {
@@ -321,7 +332,7 @@ public class UnitsController implements Initializable {
         stage.setFullScreen(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(( (Node) event.getSource() ).getScene().getWindow());
-        stage.showAndWait();
+        stage.show();
 
     }
 
@@ -344,4 +355,66 @@ public class UnitsController implements Initializable {
 
     }
 
+    static class EditingCell extends TableCell<Unit, String> {
+
+        private TextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText(getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
+            textField.getStyleClass().add("cta-text-field");
+            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
+                if (!arg2) {
+                    commitEdit(textField.getText());
+                }
+            });
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem();
+        }
+    }
 }

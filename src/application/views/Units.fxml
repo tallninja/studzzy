@@ -54,7 +54,7 @@
         </Pane>
         <Pane layoutX="267.0" prefHeight="700.0" prefWidth="664.0">
          <children>
-            <TableView fx:id="unitsTable" layoutY="87.0" prefHeight="613.0" prefWidth="664.0">
+            <TableView fx:id="unitsTable" editable="true" layoutY="87.0" prefHeight="613.0" prefWidth="664.0">
               <columns>
                 <TableColumn fx:id="unitNameCol" prefWidth="161.0" text="Unit Name" />
                 <TableColumn fx:id="unitCodeCol" prefWidth="102.0" text="Unit Code" />
