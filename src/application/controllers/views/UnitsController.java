@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,15 +19,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class UnitsController implements Initializable {
@@ -68,10 +67,14 @@ public class UnitsController implements Initializable {
     TableColumn<Unit, Integer> pagesCol;
 
     @FXML
-    TextField searchTextField;
+    TableColumn<Unit, Button> editActionCol;
 
     @FXML
-    DialogPane dialogPane;
+    TableColumn<Unit, Button> deleteActionCol;
+
+    @FXML
+    TextField searchTextField;
+
 
     @FXML
     TextField unitNameField;
@@ -85,6 +88,8 @@ public class UnitsController implements Initializable {
     @FXML
     Spinner<Integer> numberOfPagesField;
 
+    @FXML
+    Button createButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -103,48 +108,86 @@ public class UnitsController implements Initializable {
             lecturerCol.setCellValueFactory(new PropertyValueFactory<>("lecturer"));
             pagesCol.setCellValueFactory(new PropertyValueFactory<>("pages"));
 
+            Callback<TableColumn<Unit, Button>, TableCell<Unit, Button>> editCellFactory
+                    = //
+                    new Callback<>() {
+                        @Override
+                        public TableCell call(final TableColumn<Unit, Button> param) {
+                            final TableCell<Unit, Button> cell = new TableCell<>() {
+
+                                @Override
+                                public void updateItem(Button item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    if (empty) {
+                                        setGraphic(null);
+                                    } else {
+
+                                        Button actionButton = new Button("Edit");
+                                        actionButton.getStyleClass().add("cta-button");
+                                        actionButton.setMaxWidth(Double.MAX_VALUE);
+
+                                        actionButton.setOnAction(event -> {
+                                            Unit unit = getTableView().getItems().get(getIndex());
+                                            editUnit(unit, event);
+                                        });
+                                        setGraphic(actionButton);
+                                    }
+                                    setText(null);
+                                }
+                            };
+                            return cell;
+                        }
+                    };
+
+            Callback<TableColumn<Unit, Button>, TableCell<Unit, Button>> deleteCellFactory
+                    = //
+                    new Callback<>() {
+                        @Override
+                        public TableCell call(final TableColumn<Unit, Button> param) {
+                            final TableCell<Unit, Button> cell = new TableCell<>() {
+
+                                @Override
+                                public void updateItem(Button item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    if (empty) {
+                                        setGraphic(null);
+                                    } else {
+
+                                        Button actionButton = new Button("Delete");
+                                        actionButton.getStyleClass().add("cta-button");
+                                        actionButton.setMaxWidth(Double.MAX_VALUE);
+
+                                        actionButton.setOnAction(event -> {
+                                            Unit unit = getTableView().getItems().get(getIndex());
+                                            deleteUnit(unit, event);
+                                        });
+                                        setGraphic(actionButton);
+                                    }
+                                    setText(null);
+                                }
+                            };
+                            return cell;
+                        }
+                    };
+
+            editActionCol.setCellFactory(editCellFactory);
+
+            deleteActionCol.setCellFactory(deleteCellFactory);
+
             unitsTable.setItems(unitsObservableList);
 
-            FilteredList<Unit> filteredUnits = new FilteredList<>(unitsObservableList, b -> true);
-
-            // adding a change listener to the search text field
-            searchTextField.textProperty().addListener((observableValue, oldValue, newValue) -> filteredUnits.setPredicate(unitItems -> {
-
-                // if the search-field is empty then return all the values
-                if (newValue.isEmpty() || newValue.isBlank()) {
-                    return true;
-                }
-
-                String searchKeyword = newValue.toLowerCase();
-
-                if (unitItems.getName().toLowerCase().contains(searchKeyword)) {
-                    return true;
-                } else if (unitItems.getLecturer().toLowerCase().contains(searchKeyword)) {
-                    return true;
-                } else if (unitItems.getCode().contains(searchKeyword)) {
-                    return true;
-                } else {
-                    return false;
-                }
-
-            }));
-
-            SortedList<Unit> sortedData = new SortedList<>(filteredUnits);
-
-            sortedData.comparatorProperty().bind(unitsTable.comparatorProperty());
-
-            unitsTable.setItems(sortedData);
+            searchUnit(unitsObservableList);
         }
 
         if (numberOfPagesField != null) {
-            SpinnerValueFactory<Integer> spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5000);
+            SpinnerValueFactory<Integer> spinnerValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 5000);
             spinnerValueFactory.setValue(0);
             numberOfPagesField.setValueFactory(spinnerValueFactory);
         }
     }
 
     public void addUnit(ActionEvent event) throws IOException {
-        setModal("UnitModal.fxml", event);
+        setModal("UnitModal.fxml", "Create Unit", event);
     }
 
     public void createUnit(ActionEvent event) {
@@ -161,7 +204,63 @@ public class UnitsController implements Initializable {
         }
     }
 
-    public void deleteUnit(ActionEvent event) {
+    public void editUnit(Unit unit, ActionEvent event) {
+
+        setModal("UnitModal.fxml", "Edit Unit", event);
+
+        if(unitNameField != null && unitCodeCol != null && lecturerField != null && numberOfPagesField != null) {
+            unitNameField.setText(unit.getName());
+            unitCodeField.setText(unit.getCode());
+            lecturerField.setText(unit.getLecturer());
+            numberOfPagesField.getValueFactory().setValue(unit.getPages());
+
+        }
+
+        setModal("UnitModal.fxml", "Edit Unit", event);
+    }
+
+    public void deleteUnit(Unit unit, ActionEvent event) {
+        try {
+            setDeleteModal(event, "Delete Unit");
+            if(DeleteModalController.isDelete) {
+                UnitController.deleteUnit(unit);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void searchUnit(ObservableList<Unit> unitsObservableList) {
+
+        FilteredList<Unit> filteredUnits = new FilteredList<>(unitsObservableList, b -> true);
+
+        // adding a change listener to the search text field
+        searchTextField.textProperty().addListener((observableValue, oldValue, newValue) -> filteredUnits.setPredicate(unitItems -> {
+
+            // if the search-field is empty then return all the values
+            if (newValue.isEmpty() || newValue.isBlank()) {
+                return true;
+            }
+
+            String searchKeyword = newValue.toLowerCase();
+
+            if (unitItems.getName().toLowerCase().contains(searchKeyword)) {
+                return true;
+            } else if (unitItems.getLecturer().toLowerCase().contains(searchKeyword)) {
+                return true;
+            } else if (unitItems.getCode().contains(searchKeyword)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }));
+
+        SortedList<Unit> sortedData = new SortedList<>(filteredUnits);
+
+        sortedData.comparatorProperty().bind(unitsTable.comparatorProperty());
+
+        unitsTable.setItems(sortedData);
 
     }
 
@@ -203,20 +302,46 @@ public class UnitsController implements Initializable {
     }
 
     // creates a popup window
-    public void setModal(String resource, ActionEvent event) throws  IOException {
+    public void setModal(String resource, String modalTitle, ActionEvent event) {
 
         String fxmlPath = String.format("../../views/modals/%s", resource);
-        Parent root = FXMLLoader.load(UnitsController.class.getResource(fxmlPath));
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(UnitsController.class.getResource(fxmlPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert root != null;
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Studzzy");
+        stage.setTitle(modalTitle);
         stage.centerOnScreen();
         stage.setResizable(false);
         stage.setFullScreen(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(( (Node) event.getSource() ).getScene().getWindow());
-        stage.show();
+        stage.showAndWait();
+
+    }
+
+    // creates a popup window
+    public void setDeleteModal(ActionEvent event, String modalTitle) throws IOException {
+
+        String fxmlPath = "../../views/modals/DeleteModal.fxml";
+
+        Parent root = FXMLLoader.load(UnitsController.class.getResource(fxmlPath));
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle(modalTitle);
+        stage.centerOnScreen();
+        stage.setResizable(false);
+        stage.setFullScreen(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(( (Node) event.getSource() ).getScene().getWindow());
+        stage.showAndWait();
+
     }
 
 }

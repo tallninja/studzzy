@@ -78,6 +78,12 @@
     -fx-cell-size : 20;
     -fx-background-color: #222831;
 }
+
+.table-view .column-header {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+}
+
 .table-view .column-header .label{
 
     -fx-text-fill: white;
@@ -119,6 +125,16 @@
 
 }
 
+.table-action-button-delete {
+    -fx-text-fill: white;
+    -fx-background-color: #FF3F00;
+}
+
+.table-action-button-edit {
+    -fx-text-fill: white;
+    -fx-background-color: #FAFF00;
+}
+
 .cta-dialog-box {
     -fx-border-width: 2;
     -fx-border-color: #F05454;
@@ -128,3 +144,4 @@
 .cta-dialog-box .header-pane {
     -fx-background-color: inherit;
 }
+

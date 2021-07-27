@@ -56,18 +56,15 @@
          <children>
             <TableView fx:id="unitsTable" layoutY="87.0" prefHeight="613.0" prefWidth="664.0">
               <columns>
-                <TableColumn fx:id="unitNameCol" prefWidth="248.0" text="Unit Name" />
-                <TableColumn fx:id="unitCodeCol" prefWidth="114.0" text="Unit Code" />
-                  <TableColumn fx:id="lecturerCol" prefWidth="196.0" text="Lecturer" />
-                  <TableColumn fx:id="pagesCol" prefWidth="105.0" text="Pages" />
+                <TableColumn fx:id="unitNameCol" prefWidth="161.0" text="Unit Name" />
+                <TableColumn fx:id="unitCodeCol" prefWidth="102.0" text="Unit Code" />
+                  <TableColumn fx:id="lecturerCol" prefWidth="193.0" text="Lecturer" />
+                  <TableColumn fx:id="pagesCol" prefWidth="72.0" text="Pages" />
+                  <TableColumn fx:id="editActionCol" prefWidth="70.0" />
+                  <TableColumn fx:id="deleteActionCol" prefWidth="70.0" />
               </columns>
             </TableView>
             <Button layoutX="555.0" layoutY="14.0" mnemonicParsing="false" onAction="#addUnit" prefHeight="40.0" prefWidth="95.0" styleClass="cta-button" text="Add">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Button>
-            <Button layoutX="450.0" layoutY="14.0" mnemonicParsing="false" onAction="#deleteUnit" prefHeight="40.0" prefWidth="95.0" styleClass="cta-button" text="Delete">
                <font>
                   <Font size="17.0" />
                </font>
@@ -77,7 +74,7 @@
                   <Font size="17.0" />
                </font>
             </Button>
-            <TextField fx:id="searchTextField" layoutX="130.0" layoutY="14.0" prefHeight="40.0" prefWidth="299.0" promptText="Search Units" styleClass="cta-text-field">
+            <TextField fx:id="searchTextField" layoutX="130.0" layoutY="14.0" prefHeight="40.0" prefWidth="407.0" promptText="Search Units" styleClass="cta-text-field">
                <font>
                   <Font size="20.0" />
                </font>
