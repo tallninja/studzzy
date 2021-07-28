@@ -207,7 +207,6 @@ public class UnitsController implements Initializable {
             unit.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
-            refreshView(event);
         }
     }
 

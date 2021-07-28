@@ -34,7 +34,7 @@
                         <Button fx:id="homeButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Home" />
                         <Button fx:id="unitsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Units" GridPane.rowIndex="1" />
                         <Button fx:id="remindersButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Reminders" GridPane.rowIndex="2" />
-                        <Button fx:id="testsButton" mnemonicParsing="false" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Tests" GridPane.rowIndex="3" />
+                        <Button fx:id="testsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" styleClass="grid-pane-button" text="Tests" GridPane.rowIndex="3" />
                         <Button fx:id="submissionsButton" mnemonicParsing="false" onAction="#changeView" prefHeight="125.0" prefWidth="282.0" style="-fx-background-color: #222831;" styleClass="grid-pane-button" text="Submissions" GridPane.rowIndex="4" />
                         <Button fx:id="loungeButton" mnemonicParsing="false" onAction="#changeView" prefHeight="122.0" prefWidth="267.0" styleClass="grid-pane-button" text="Lounge" GridPane.rowIndex="5" />
                     </children>
