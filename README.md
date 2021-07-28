@@ -21,7 +21,7 @@ Setup instructions for running the application
     It acts as some sort of autopilot that ensures that our DB infrastructure runs smoothly.
     * **On Windows.**\
         Good news !\
-        Docker desktop comes preinstalled with docker compose so just move along to the next piece of instruction.
+        Docker desktop comes preinstalled with docker compose so just move on to step 3.
       
     * **On linux.**\
         Run the following commands on terminal.
