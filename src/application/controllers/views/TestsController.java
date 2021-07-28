@@ -19,6 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -60,19 +62,19 @@ public class TestsController implements Initializable {
     TextField searchExamTextField;
 
     @FXML
-    TableColumn<Cat, String> catUnitCol;
+    TableColumn<Cat, Unit> catUnitCol;
 
     @FXML
-    TableColumn<Cat, String> catDateCol;
+    TableColumn<Cat, Date> catDateCol;
 
     @FXML
     TableColumn<Cat, String> catTypeCol;
 
     @FXML
-    TableColumn<Exam, String> examUnitCol;
+    TableColumn<Exam, Unit> examUnitCol;
 
     @FXML
-    TableColumn<Exam, String> examDateCol;
+    TableColumn<Exam, Date> examDateCol;
 
     @FXML
     TableColumn<Cat, Button> editCatActionCol;
@@ -92,6 +94,22 @@ public class TestsController implements Initializable {
     @FXML
     TableView<Exam> examsTable;
 
+    @FXML
+    ComboBox<Unit> catUnitsCombo;
+
+    @FXML
+    ComboBox<String> catTypesCombo;
+
+    @FXML
+    ComboBox<Unit> examUnitsCombo;
+
+    @FXML
+    DatePicker catDatePicker;
+
+    @FXML
+    DatePicker examDatePicker;
+
+
 
 
     @Override
@@ -99,7 +117,20 @@ public class TestsController implements Initializable {
 
         ObservableList<Cat> catsObservableList = FXCollections.observableArrayList();
         ObservableList<Exam> examsObservableList = FXCollections.observableArrayList();
+        ObservableList<Unit> unitsObservableList = FXCollections.observableArrayList();
+        ObservableList<String> catTypesObservableList = FXCollections.observableArrayList();
         DateStringConverter stringToDateConverter = new DateStringConverter();
+
+        List<Unit> units = UnitController.getUnits();
+        assert units != null;
+        unitsObservableList.addAll(units);
+
+        catUnitsCombo.setItems(unitsObservableList);
+        examUnitsCombo.setItems(unitsObservableList);
+
+        String[] catTypes = { "Take Away", "Sitting" };
+        catTypesObservableList.addAll(catTypes);
+        catTypesCombo.setItems(catTypesObservableList);
 
         if(catUnitCol != null && catDateCol != null && catTypeCol != null && examUnitCol != null && examDateCol != null) {
 
@@ -111,36 +142,21 @@ public class TestsController implements Initializable {
             assert exams != null;
             examsObservableList.addAll(exams);
 
-            Callback<TableColumn<Cat, String>, TableCell<Cat, String>> catEditCellFactory =
-                    p -> new TestsController.CatEditingCell();
-
-            Callback<TableColumn<Exam, String>, TableCell<Exam, String>> examEditCellFactory =
-                    p -> new TestsController.ExamEditingCell();
-
             catUnitCol.setCellValueFactory(new PropertyValueFactory<>("unit"));
+            catUnitCol.setCellFactory(ComboBoxTableCell.forTableColumn(unitsObservableList));
 
             catDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-//            catDateCol.setCellFactory(catEditCellFactory);
-//            catDateCol.setOnEditCommit(
-//                    t -> t.getTableView().getItems().get(
-//                            t.getTablePosition().getRow()).setDate(stringToDateConverter.fromStringToDate(t.getNewValue()))
-//            );
+            catDateCol.setSortType(TableColumn.SortType.ASCENDING);
 
             catTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-//            catTypeCol.setCellFactory(catEditCellFactory);
-//            catTypeCol.setOnEditCommit(
-//                    t -> t.getTableView().getItems().get(
-//                            t.getTablePosition().getRow()).setTypeFromString(t.getNewValue())
-//            );
+            catTypeCol.setCellFactory(ComboBoxTableCell.forTableColumn(catTypesObservableList));
+
 
             examUnitCol.setCellValueFactory(new PropertyValueFactory<>("unit"));
+            examUnitCol.setCellFactory(ComboBoxTableCell.forTableColumn(unitsObservableList));
 
             examDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
-//            examDateCol.setCellFactory(examEditCellFactory);
-//            examDateCol.setOnEditCommit(
-//                    t -> t.getTableView().getItems().get(
-//                            t.getTablePosition().getRow()).setDate(stringToDateConverter.fromStringToDate(t.getNewValue()))
-//            );
+            examDateCol.setSortType(TableColumn.SortType.ASCENDING);
 
             Callback<TableColumn<Cat, Button>, TableCell<Cat, Button>> saveCatChangesCellFactory
                     = //
@@ -286,22 +302,72 @@ public class TestsController implements Initializable {
     }
 
 
-    public void addCat() {
-        System.out.println("");
+    public void addCat(ActionEvent event) throws IOException {
+        DateStringConverter dateStringConverter = new DateStringConverter();
+        catDatePicker.setConverter(dateStringConverter);
+
+        if (catUnitsCombo.getValue() != null && !dateStringConverter.hasParseError() && !catTypesCombo.getValue().equals("")) {
+            Unit unit = catUnitsCombo.getValue();
+            Date date = new Date(dateStringConverter.toMills(catDatePicker.getValue()));
+            int type = catTypesCombo.getValue().equals("Sitting") ? 1 : 2;
+
+            Cat cat = new Cat(unit, date, type);
+            cat.save();
+            refreshView(event);
+        }
     }
 
-    public  void addExam() {
-        System.out.println("");
+    public void addExam(ActionEvent event) throws IOException {
+        DateStringConverter dateStringConverter = new DateStringConverter();
+        examDatePicker.setConverter(dateStringConverter);
+
+        if (examUnitsCombo.getValue() != null && !dateStringConverter.hasParseError()) {
+            Unit unit = examUnitsCombo.getValue();
+            Date date = new Date(dateStringConverter.toMills(examDatePicker.getValue()));
+
+            Exam exam = new Exam(unit, date);
+            exam.save();
+            refreshView(event);
+        }
+    }
+
+    // editing a unit on the cats table
+    public void onCatUnitsEditCommit(TableColumn.CellEditEvent<Cat, Unit> catUnitCellEditEvent) {
+        Cat cat = catsTable.getSelectionModel().getSelectedItem();
+        cat.setUnit(catUnitCellEditEvent.getNewValue());
+        System.out.println(cat);
+    }
+
+    // editing a cat type on the cats table
+    public void onCatTypesEditCommit(TableColumn.CellEditEvent<Cat, String> catStringCellEditEvent) {
+        Cat cat = catsTable.getSelectionModel().getSelectedItem();
+        cat.setTypeFromString(catStringCellEditEvent.getNewValue());
+    }
+
+    // editing a unit on the exams table
+    public void onExamUnitsEditCommit(TableColumn.CellEditEvent<Exam, Unit> examUnitCellEditEvent) {
+        Exam exam = examsTable.getSelectionModel().getSelectedItem();
+        exam.setUnit(examUnitCellEditEvent.getNewValue());
     }
 
     // edit a cat
     public void editCat(Cat cat, ActionEvent event) {
         CatController.editCat(cat);
+        try {
+            refreshView(event);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // edit an exam
     public void editExam(Exam exam, ActionEvent event) {
         ExamController.editExam(exam);
+        try {
+            refreshView(event);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // delete a CAT
@@ -310,6 +376,7 @@ public class TestsController implements Initializable {
             setDeleteModal(event, "Delete Cat");
             if(DeleteModalController.isDelete) {
                 CatController.deleteCat(cat);
+                refreshView(event);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -322,6 +389,7 @@ public class TestsController implements Initializable {
             setDeleteModal(event, "Delete Exam");
             if(DeleteModalController.isDelete) {
                 ExamController.deleteExam(exam);
+                refreshView(event);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -349,7 +417,7 @@ public class TestsController implements Initializable {
                 return true;
             } else if (catItems.getUnitObject().getCode().contains(searchKeyword)) {
                 return true;
-            } else return catItems.getTypeToString().contains(searchKeyword);
+            } else return catItems.getType().contains(searchKeyword);
 
         }));
 
@@ -478,131 +546,4 @@ public class TestsController implements Initializable {
 
     }
 
-
-
-    static class CatEditingCell extends TableCell<Cat, String> {
-
-        private TextField textField;
-
-        public CatEditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText(getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
-            textField.getStyleClass().add("cta-text-field");
-            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
-                if (!arg2) {
-                    commitEdit(textField.getText());
-                }
-            });
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem();
-        }
-    }
-
-    static class ExamEditingCell extends TableCell<Exam, String> {
-
-        private TextField textField;
-
-        public ExamEditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText(getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
-            textField.getStyleClass().add("cta-text-field");
-            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
-                if (!arg2) {
-                    commitEdit(textField.getText());
-                }
-            });
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem();
-        }
-    }
 }

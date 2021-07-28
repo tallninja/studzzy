@@ -56,10 +56,10 @@
          <children>
             <TableView fx:id="unitsTable" editable="true" layoutY="87.0" prefHeight="613.0" prefWidth="664.0">
               <columns>
-                <TableColumn fx:id="unitNameCol" prefWidth="161.0" text="Unit Name" />
-                <TableColumn fx:id="unitCodeCol" prefWidth="102.0" text="Unit Code" />
-                  <TableColumn fx:id="lecturerCol" prefWidth="193.0" text="Lecturer" />
-                  <TableColumn fx:id="pagesCol" prefWidth="72.0" text="Pages" />
+                <TableColumn fx:id="unitNameCol" onEditCommit="#onUnitNameEditCommit" prefWidth="161.0" text="Unit Name" />
+                <TableColumn fx:id="unitCodeCol" onEditCommit="#onUnitCodeEditCommit" prefWidth="102.0" text="Unit Code" />
+                  <TableColumn fx:id="lecturerCol" onEditCommit="#onLecturerEditCommit" prefWidth="193.0" text="Lecturer" />
+                  <TableColumn fx:id="pagesCol" onEditCommit="#onPagesEditCommit" prefWidth="72.0" text="Pages" />
                   <TableColumn fx:id="editActionCol" prefWidth="70.0" />
                   <TableColumn fx:id="deleteActionCol" prefWidth="70.0" />
               </columns>

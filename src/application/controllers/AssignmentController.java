@@ -71,9 +71,9 @@ public class AssignmentController {
                         TABLE_ASSIGNMENTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUuid());
-                statement.setObject(2, assignment.getUnit().getUuid());
+                statement.setObject(2, assignment.getUnitObject().getUuid());
                 statement.setDate(3, assignment.getDate());
-                statement.setInt(4, assignment.getType());
+                statement.setInt(4, assignment.getTypeInt());
                 statement.executeUpdate();
             }
 
@@ -184,7 +184,7 @@ public class AssignmentController {
                 sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, assignment.getDate());
-                statement.setInt(2, assignment.getType());
+                statement.setInt(2, assignment.getTypeInt());
                 statement.setObject(3, assignment.getUuid());
                 statement.executeUpdate();
             }

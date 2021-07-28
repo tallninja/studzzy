@@ -72,9 +72,9 @@ public class CatController {
                                             TABLE_CATS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());
-                statement.setObject(2, cat.getUnit().getUuid());
+                statement.setObject(2, cat.getUnitObject().getUuid());
                 statement.setDate(3, cat.getDate());
-                statement.setInt(4, cat.getType());
+                statement.setInt(4, cat.getTypeInt());
                 statement.executeUpdate();
             }
 
@@ -182,11 +182,12 @@ public class CatController {
         try {
 
             if(checkCatExists(cat.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_CATS, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
+                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=? WHERE %s=?", TABLE_CATS, COLUMN_DATE, COLUMN_UNIT, COLUMN_TYPE, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, cat.getDate());
-                statement.setInt(2, cat.getType());
-                statement.setObject(3, cat.getUuid());
+                statement.setObject(2, cat.getUnitObject().getUuid());
+                statement.setInt(3, cat.getTypeInt());
+                statement.setObject(4, cat.getUuid());
                 statement.executeUpdate();
             }
 

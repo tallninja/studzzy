@@ -25,7 +25,7 @@ public class Exam extends Test {
     }
 
     public void update(Date date) {
-        this.setUnit(this.getUnit());
+        this.setUnit(this.getUnitObject());
         this.setDate(date);
         ExamController.editExam(this);
     }

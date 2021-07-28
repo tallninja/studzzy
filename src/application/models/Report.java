@@ -33,7 +33,7 @@ public class Report extends  Submission {
     }
 
     public void update(Date date, int type) {
-        this.setUnit(this.getUnit());
+        this.setUnit(this.getUnitObject());
         this.setDate(date);
         this.setType(type);
         ReportController.editReport(this);
@@ -53,10 +53,10 @@ public class Report extends  Submission {
     @Override
     public String toString() {
         return String.format("Report{'unit': %s, 'date': %s, 'type': %s}",
-                this.getUnitObject(), this.getDate(), this.getTypeToString());
+                this.getUnitObject(), this.getDate(), this.getType());
     }
 
-    public String getTypeToString() {
+    public String getType() {
         return switch (this.type) {
             case 1 -> "group";
             case 2 -> "individual";
@@ -72,7 +72,7 @@ public class Report extends  Submission {
         this.uuid = uuid;
     }
 
-    public int getType() {
+    public int getTypeInt() {
         return type;
     }
 

@@ -16,8 +16,8 @@ public class Submission implements Remindable {
         this.setDate(date);
     }
 
-    public Unit getUnit() {
-        return unit;
+    public String getUnit() {
+        return unit.getName();
     }
 
     public void setUnit(Unit unit) {

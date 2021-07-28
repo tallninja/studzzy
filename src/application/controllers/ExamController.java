@@ -70,7 +70,7 @@ public class ExamController {
                         TABLE_EXAMS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());
-                statement.setObject(2, exam.getUnit().getUuid());
+                statement.setObject(2, exam.getUnitObject().getUuid());
                 statement.setDate(3, exam.getDate());
                 statement.executeUpdate();
             }
@@ -180,10 +180,11 @@ public class ExamController {
         try {
 
             if(checkCatExists(exam.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=? WHERE %s=?", TABLE_EXAMS, COLUMN_DATE, COLUMN_UUID);
+                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_EXAMS, COLUMN_DATE, COLUMN_UNIT, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, exam.getDate());
-                statement.setObject(2, exam.getUuid());
+                statement.setObject(2, exam.getUnitObject().getUuid());
+                statement.setObject(3, exam.getUuid());
                 statement.executeUpdate();
             }
 

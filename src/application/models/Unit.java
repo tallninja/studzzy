@@ -48,8 +48,7 @@ public class Unit {
 
     @Override
     public String toString() {
-        return String.format("Unit{'name': %s, 'code': %s, 'lecturer': %s, 'pages': %d}",
-                                this.getName(), this.getCode(), this.getLecturer(), this.getPages());
+        return this.getName();
     }
 
     public UUID getUuid() {

@@ -21,8 +21,8 @@ public class Test implements Remindable {
         return UnitController.getUnit(unit.getUuid());
     }
 
-    public Unit getUnit() {
-        return this.unit;
+    public String getUnit() {
+        return this.unit.getName();
     }
 
     public void setUnit(Unit unit) {

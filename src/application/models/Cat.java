@@ -28,7 +28,7 @@ public class Cat extends Test {
     }
 
     public void update(Date date, int type) {
-        this.setUnit(this.getUnit());
+        this.setUnit(this.getUnitObject());
         this.setDate(date);
         this.setType(type);
         CatController.editCat(this);
@@ -38,18 +38,18 @@ public class Cat extends Test {
         CatController.deleteCat(this);
     }
 
-    public String getTypeToString() {
-        return switch (this.getType()) {
-            case 1 -> "sitting";
-            case 2 -> "take-away";
+    public String getType() {
+        return switch (this.getTypeInt()) {
+            case 1 -> "Sitting";
+            case 2 -> "Take Away";
             default -> "invalid-type";
         };
     }
 
     public void setTypeFromString(String type) {
         switch (type) {
-            case "sitting" -> this.setType(1);
-            case "take-away" -> this.setType(2);
+            case "Sitting" -> this.setType(1);
+            case "Take Away" -> this.setType(2);
             default -> this.setType(1);
         }
     }
@@ -64,7 +64,7 @@ public class Cat extends Test {
     @Override
     public String toString() {
         return String.format("Cat{'unit': %s, 'date': %s, 'type': %s}",
-                                this.getUnitObject(), this.getDate(), this.getTypeToString());
+                                this.getUnitObject(), this.getDate(), this.getType());
     }
 
     public UUID getUuid() {
@@ -79,7 +79,7 @@ public class Cat extends Test {
         this.type = type;
     }
 
-    public int getType() {
+    public int getTypeInt() {
         return this.type;
     }
 

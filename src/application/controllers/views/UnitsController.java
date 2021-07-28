@@ -17,6 +17,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -101,29 +103,14 @@ public class UnitsController implements Initializable {
             assert units != null;
             unitsObservableList.addAll(units);
 
-            Callback<TableColumn<Unit, String>, TableCell<Unit, String>> editCellFactory =
-                    p -> new EditingCell();
-
             unitNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-            unitNameCol.setCellFactory(editCellFactory);
-            unitNameCol.setOnEditCommit(
-                    t -> t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()).setName(t.getNewValue())
-            );
+            unitNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
             unitCodeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
-            unitCodeCol.setCellFactory(editCellFactory);
-            unitCodeCol.setOnEditCommit(
-                    t -> t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()).setCode(t.getNewValue())
-            );
+            unitCodeCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
             lecturerCol.setCellValueFactory(new PropertyValueFactory<>("lecturer"));
-            lecturerCol.setCellFactory(editCellFactory);
-            lecturerCol.setOnEditCommit(
-                    t -> t.getTableView().getItems().get(
-                            t.getTablePosition().getRow()).setLecturer(t.getNewValue())
-            );
+            lecturerCol.setCellFactory(TextFieldTableCell.forTableColumn());
 
             pagesCol.setCellValueFactory(new PropertyValueFactory<>("pages"));
 
@@ -209,7 +196,7 @@ public class UnitsController implements Initializable {
         setModal("UnitModal.fxml", "Create Unit", event);
     }
 
-    public void createUnit(ActionEvent event) {
+    public void createUnit(ActionEvent event) throws IOException {
         String unitName = unitNameField.getText();
         String unitCode = unitCodeField.getText();
         String unitLecturer = lecturerField.getText();
@@ -220,11 +207,37 @@ public class UnitsController implements Initializable {
             unit.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
+            refreshView(event);
         }
+    }
+
+    public void onUnitNameEditCommit(CellEditEvent<Unit, String> unitStringCellEditEvent) {
+        Unit unit = unitsTable.getSelectionModel().getSelectedItem();
+        unit.setName(unitStringCellEditEvent.getNewValue());
+    }
+
+    public void onUnitCodeEditCommit(CellEditEvent<Unit, String> unitStringCellEditEvent) {
+        Unit unit = unitsTable.getSelectionModel().getSelectedItem();
+        unit.setCode(unitStringCellEditEvent.getNewValue());
+    }
+
+    public void onLecturerEditCommit(CellEditEvent<Unit, String> unitStringCellEditEvent) {
+        Unit unit = unitsTable.getSelectionModel().getSelectedItem();
+        unit.setLecturer(unitStringCellEditEvent.getNewValue());
+    }
+
+    public void onPagesEditCommit(CellEditEvent<Unit, Integer> unitIntegerCellEditEvent) {
+        Unit unit = unitsTable.getSelectionModel().getSelectedItem();
+        unit.setPages(unitIntegerCellEditEvent.getNewValue());
     }
 
     public void editUnit(Unit unit, ActionEvent event) {
         UnitController.editUnit(unit);
+        try {
+            refreshView(event);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteUnit(Unit unit, ActionEvent event) {
@@ -232,6 +245,7 @@ public class UnitsController implements Initializable {
             setDeleteModal(event, "Delete Unit");
             if(DeleteModalController.isDelete) {
                 UnitController.deleteUnit(unit);
+                refreshView(event);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -352,66 +366,4 @@ public class UnitsController implements Initializable {
 
     }
 
-    static class EditingCell extends TableCell<Unit, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText(getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
-            textField.getStyleClass().add("cta-text-field");
-            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
-                if (!arg2) {
-                    commitEdit(textField.getText());
-                }
-            });
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem();
-        }
-    }
 }

@@ -109,6 +109,14 @@
     -fx-border-width: 0;
 }
 
+.table-view. cell:selected {
+    -fx-text-fill: black;
+}
+
+.table-view .combo-box .cell {
+    -fx-text-fill: black;
+}
+
 /* scroll bar starts here */
 
 /* The increment and decrement button CSS class of scrollbar */
@@ -144,5 +152,13 @@
 .table-action-button-edit {
     -fx-text-fill: white;
     -fx-background-color: #FAFF00;
+}
+
+.cell-renderer-changed {
+    -fx-text-fill: black;
+}
+
+.cell-renderer-changed:selected {
+    -fx-text-fill: black;
 }
 

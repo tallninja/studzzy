@@ -71,9 +71,9 @@ public class ReportController {
                         TABLE_REPORTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUuid());
-                statement.setObject(2, report.getUnit().getUuid());
+                statement.setObject(2, report.getUnitObject().getUuid());
                 statement.setDate(3, report.getDate());
-                statement.setInt(4, report.getType());
+                statement.setInt(4, report.getTypeInt());
                 statement.executeUpdate();
             }
 
@@ -184,7 +184,7 @@ public class ReportController {
                 sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_REPORTS, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, report.getDate());
-                statement.setInt(2, report.getType());
+                statement.setInt(2, report.getTypeInt());
                 statement.setObject(3, report.getUuid());
                 statement.executeUpdate();
             }
