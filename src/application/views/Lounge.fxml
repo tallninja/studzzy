@@ -2,12 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
 <AnchorPane prefHeight="700.0" prefWidth="930.0" styleClass="scene" stylesheets="@css/style.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.views.LoungeController">
     <children>
@@ -51,7 +53,25 @@
         </Pane>
         <Pane layoutX="267.0" prefHeight="700.0" prefWidth="664.0">
             <children>
-                <Label layoutX="285.0" layoutY="350.0" styleClass="cta-header" text="Lounge" />
+            <WebView fx:id="webView" layoutY="146.0" prefHeight="554.0" prefWidth="664.0" />
+            <Pane prefHeight="68.0" prefWidth="664.0" styleClass="cta-pane">
+               <children>
+                  <Label layoutX="14.0" layoutY="7.0" styleClass="brand-label" text="Lounge" />
+               </children>
+            </Pane>
+            <Button fx:id="ytButton" layoutX="348.0" layoutY="78.0" mnemonicParsing="false" onAction="#goTo" prefHeight="24.0" prefWidth="81.0" styleClass="cta-button" text="YouTube" />
+            <TextField fx:id="webSearchField" layoutX="94.0" layoutY="113.0" onKeyPressed="#searchPage" prefHeight="24.0" prefWidth="247.0" promptText="Search website, eg... facebook.com" styleClass="cta-text-field" />
+            <Button fx:id="forwardButton" layoutX="353.0" layoutY="113.0" mnemonicParsing="false" onAction="#goForward" styleClass="cta-button" text="Forward" />
+            <Button fx:id="backButton" layoutX="14.0" layoutY="113.0" mnemonicParsing="false" onAction="#goBack" prefHeight="24.0" prefWidth="68.0" styleClass="cta-button" text="Back" />
+            <Button fx:id="twButton" layoutX="436.0" layoutY="78.0" mnemonicParsing="false" onAction="#goTo" styleClass="cta-button" text="Twitter" />
+            <Button fx:id="glButton" layoutX="586.0" layoutY="78.0" mnemonicParsing="false" onAction="#goTo" styleClass="cta-button" text="Google" />
+            <Button fx:id="lnButton" layoutX="506.0" layoutY="78.0" mnemonicParsing="false" onAction="#goTo" styleClass="cta-button" text="LinkedIn" />
+            <Button layoutX="14.0" layoutY="78.0" mnemonicParsing="false" onAction="#refreshPage" styleClass="cta-button" text="Refresh" />
+            <Button layoutX="134.0" layoutY="78.0" mnemonicParsing="false" onAction="#zoomIn" styleClass="cta-button" text="+" />
+            <Button layoutX="195.0" layoutY="78.0" mnemonicParsing="false" onAction="#zoomOut" prefHeight="24.0" prefWidth="29.0" styleClass="cta-button" text="-" />
+            <Button layoutX="436.0" layoutY="113.0" mnemonicParsing="false" onAction="#displayHistory" styleClass="cta-button" text="Show History" />
+            <Button layoutX="547.0" layoutY="113.0" mnemonicParsing="false" onAction="#clearHistory" styleClass="cta-button" text="Clear History" />
+            <Button fx:id="ghButton" layoutX="260.0" layoutY="78.0" mnemonicParsing="false" onAction="#goTo" prefHeight="24.0" prefWidth="81.0" styleClass="cta-button" text="GitHub" />
             </children>
         </Pane>
     </children>
