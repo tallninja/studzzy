@@ -10,10 +10,10 @@ Setup instructions for running the application
 
     Docker is a container runtime application that we will use to run the database and database web interface.
     * **On Windows.** \
-        [Windows installation instructions]("https://docs.docker.com/docker-for-windows/install/")
+        [Windows installation instructions](https://docs.docker.com/docker-for-windows/install/)
 
     * **On Linux (Ubuntu).** \
-        [Linux installation instructions]("https://docs.docker.com/engine/install/ubuntu/")
+        [Linux installation instructions](https://docs.docker.com/engine/install/ubuntu/)
       
 2. ### Installing Docker Compose.
 
@@ -39,7 +39,7 @@ Setup instructions for running the application
         ```
     2. Wait for a few minutes while the server stack finishes the setup process.
     3. On your web browser, type the following URL. \
-        [http://localhost:5050]("http://localhost:5050") **OR** [http://127.0.0.1:5050]("http://127.0.0.1:5050")
+        [http://localhost:5050](http://localhost:5050) **OR** [http://127.0.0.1:5050]("http://127.0.0.1:5050")
       
     4. You should see a page like this. \
         ![](images/pg-admin-login-page.png)
