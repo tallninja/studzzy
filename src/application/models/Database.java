@@ -15,16 +15,18 @@ public class Database {
             conn = DriverManager.getConnection(DB_CONNECTION_URL, DB_USER, DB_PASSWORD);
             return conn;
         } catch (Exception e) {
-            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
+            // System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
             return null;
         }
     }
 
-    public static void open() {
+    public static boolean open() {
         try {
             conn = getConn();
+            return conn != null;
         } catch(Exception e) {
-            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
+            // System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
+            return false;
         }
     }
 

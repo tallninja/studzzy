@@ -2,6 +2,22 @@
 
 This is a student time management program.
 
+![](images/login-page-final.png)
+
+![](images/create-account-page-final.png)
+
+![](images/home-page-final.png)
+
+![](images/units-page-final.png)
+
+![](images/reminders-page-final.png)
+
+![](images/tests-page-final.png)
+
+![](images/submissions-page-final.png)
+
+![](images/lounge-page-3.png)
+
 ## Setup
 
 Setup instructions for running the application
@@ -133,3 +149,5 @@ Setup instructions for running the application
 
 
 ```
+
+
