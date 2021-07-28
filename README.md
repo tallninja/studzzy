@@ -66,4 +66,70 @@ Setup instructions for running the application
     10. After successful configuration you should be redirected to the following page. \
         ![](images/servers-home.png)
 
+4. ### Project files Structure.
 
+```bash
+
+.
+├── application
+│   ├── controllers
+│   │   ├── AssignmentController.java
+│   │   ├── CatController.java
+│   │   ├── Controller.java
+│   │   ├── Crudable.java
+│   │   ├── ExamController.java
+│   │   ├── ReminderController.java
+│   │   ├── ReportController.java
+│   │   ├── TestController.java
+│   │   ├── UnitController.java
+│   │   ├── UserController.java
+│   │   ├── utils
+│   │   │   ├── DateStringConverter.java
+│   │   │   ├── Password.java
+│   │   │   └── ViewUtils.java
+│   │   └── views
+│   │       ├── DeleteModalController.java
+│   │       ├── HomeController.java
+│   │       ├── LoginController.java
+│   │       ├── LoungeController.java
+│   │       ├── RemindersController.java
+│   │       ├── SignupController.java
+│   │       ├── SubmissionsController.java
+│   │       ├── TestsController.java
+│   │       └── UnitsController.java
+│   ├── images
+│   ├── Main.java
+│   ├── models
+│   │   ├── Assignment.java
+│   │   ├── Cat.java
+│   │   ├── Database.java
+│   │   ├── Exam.java
+│   │   ├── Remindable.java
+│   │   ├── Reminder.java
+│   │   ├── Report.java
+│   │   ├── Submission.java
+│   │   ├── Test.java
+│   │   ├── Unit.java
+│   │   └── User.java
+│   └── views
+│       ├── CreateAccount.fxml
+│       ├── css
+│       │   └── style.css
+│       ├── Home.fxml
+│       ├── images
+│       │   ├── calendar.png
+│       │   └── calendar.svg
+│       ├── Login.fxml
+│       ├── Lounge.fxml
+│       ├── modals
+│       │   ├── CreateReminderModal.fxml
+│       │   ├── DeleteModal.fxml
+│       │   └── UnitModal.fxml
+│       ├── Reminders.fxml
+│       ├── Submissions.fxml
+│       ├── Tests.fxml
+│       └── Units.fxml
+└── studzzy-icon.png
+
+
+```
