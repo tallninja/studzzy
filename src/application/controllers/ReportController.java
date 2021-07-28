@@ -181,11 +181,12 @@ public class ReportController {
         try {
 
             if(checkReportExists(report.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_REPORTS, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
+                sqlStatement = String.format("UPDATE %s SET  %s=?, %s=?, %s=? WHERE %s=?", TABLE_REPORTS, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setDate(1, report.getDate());
-                statement.setInt(2, report.getTypeInt());
-                statement.setObject(3, report.getUuid());
+                statement.setObject(1, report.getUnitObject().getUuid());
+                statement.setDate(2, report.getDate());
+                statement.setInt(3, report.getTypeInt());
+                statement.setObject(4, report.getUuid());
                 statement.executeUpdate();
             }
 

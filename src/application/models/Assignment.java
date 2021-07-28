@@ -9,8 +9,8 @@ import java.util.UUID;
 public class Assignment extends Submission {
 
     /*
-     * 1 -> Group assignment
-     * 2 -> Individual individual assignment
+     * 1 -> Individual
+     * 2 -> Group
      * */
 
     private UUID uuid;
@@ -59,10 +59,18 @@ public class Assignment extends Submission {
 
     public String getType() {
         return switch (this.type) {
-            case 1 -> "group";
-            case 2 -> "individual";
-            default -> "invalid-type";
+            case 1 -> "Individual";
+            case 2 -> "Group";
+            default -> "Individual";
         };
+    }
+
+    public void setTypeFromString(String type) {
+        switch (type) {
+            case "Individual" -> this.setType(1);
+            case "Group" -> this.setType(2);
+            default -> this.setType(1);
+        }
     }
 
     public UUID getUuid() {

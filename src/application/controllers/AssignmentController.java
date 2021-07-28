@@ -181,11 +181,12 @@ public class AssignmentController {
         try {
 
             if(checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
+                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=? WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setDate(1, assignment.getDate());
-                statement.setInt(2, assignment.getTypeInt());
-                statement.setObject(3, assignment.getUuid());
+                statement.setObject(1, assignment.getUnitObject().getUuid());
+                statement.setDate(2, assignment.getDate());
+                statement.setInt(3, assignment.getTypeInt());
+                statement.setObject(4, assignment.getUuid());
                 statement.executeUpdate();
             }
 
