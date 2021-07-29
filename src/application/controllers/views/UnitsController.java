@@ -94,13 +94,15 @@ public class UnitsController implements Initializable {
     @FXML
     Button createButton;
 
+    private final User user = UserController.getUser(SessionController.getSession());
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         ObservableList<Unit> unitsObservableList = FXCollections.observableArrayList();
 
         if(unitNameCol != null && unitCodeCol != null && lecturerCol != null && pagesCol != null) {
-            List<Unit> units = UnitController.getUnits();
+            List<Unit> units = UnitController.getUnits(user);
 
             assert units != null;
             unitsObservableList.addAll(units);
@@ -205,7 +207,6 @@ public class UnitsController implements Initializable {
         int numOfPages = numberOfPagesField.getValue();
 
         if (!unitName.equals("") && !unitCode.equals("") && !unitLecturer.equals("")) {
-            User user = UserController.getUser(SessionController.getSession());
             Unit unit = new Unit(user, unitName, unitCode, unitLecturer, numOfPages);
             unit.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

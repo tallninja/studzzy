@@ -112,6 +112,7 @@ public class TestsController implements Initializable {
     DatePicker examDatePicker;
 
 
+    private final User user = UserController.getUser(SessionController.getSession());
 
 
     @Override
@@ -123,7 +124,7 @@ public class TestsController implements Initializable {
         ObservableList<String> catTypesObservableList = FXCollections.observableArrayList();
         DateStringConverter stringToDateConverter = new DateStringConverter();
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
         unitsObservableList.addAll(units);
 
@@ -136,8 +137,8 @@ public class TestsController implements Initializable {
 
         if(catUnitCol != null && catDateCol != null && catTypeCol != null && examUnitCol != null && examDateCol != null) {
 
-            List<Cat> cats = CatController.getCats();
-            List<Exam> exams = ExamController.getExams();
+            List<Cat> cats = CatController.getCats(user);
+            List<Exam> exams = ExamController.getExams(user);
 
             assert cats != null;
             catsObservableList.addAll(cats);
@@ -312,8 +313,6 @@ public class TestsController implements Initializable {
             Unit unit = catUnitsCombo.getValue();
             Date date = new Date(dateStringConverter.toMills(catDatePicker.getValue()));
             int type = catTypesCombo.getValue().equals("Sitting") ? 1 : 2;
-
-            User user = UserController.getUser(SessionController.getSession());
             Cat cat = new Cat(user, unit, date, type);
             cat.save();
             refreshView(event);
@@ -327,8 +326,6 @@ public class TestsController implements Initializable {
         if (examUnitsCombo.getValue() != null && !dateStringConverter.hasParseError()) {
             Unit unit = examUnitsCombo.getValue();
             Date date = new Date(dateStringConverter.toMills(examDatePicker.getValue()));
-
-            User user = UserController.getUser(SessionController.getSession());
             Exam exam = new Exam(user, unit, date);
             exam.save();
             refreshView(event);

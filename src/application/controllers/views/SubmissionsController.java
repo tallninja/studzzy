@@ -118,6 +118,7 @@ public class SubmissionsController implements Initializable {
     DatePicker assignmentDatePicker;
 
 
+    private final User user = UserController.getUser(SessionController.getSession());
 
 
     @Override
@@ -130,7 +131,7 @@ public class SubmissionsController implements Initializable {
         ObservableList<String> assignmentTypesObservableList = FXCollections.observableArrayList();
         DateStringConverter stringToDateConverter = new DateStringConverter();
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
         unitsObservableList.addAll(units);
 
@@ -147,8 +148,8 @@ public class SubmissionsController implements Initializable {
         if(reportUnitCol != null && reportDateCol != null && reportTypeCol != null &&
                 assignmentUnitCol != null && assignmentDateCol != null && assignmentTypeCol != null) {
 
-            List<Report> reports = ReportController.getReports();
-            List<Assignment> assignments = AssignmentController.getAssignments();
+            List<Report> reports = ReportController.getReports(user);
+            List<Assignment> assignments = AssignmentController.getAssignments(user);
 
             assert reports != null;
             reportsObservableList.addAll(reports);
@@ -327,7 +328,6 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(reportDatePicker.getValue()));
             int type = reportTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-            User user = UserController.getUser(SessionController.getSession());
             Report report = new Report(user, unit, date, type);
             report.save();
             refreshView(event);
@@ -343,7 +343,6 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(assignmentDatePicker.getValue()));
             int type = assignmentTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-            User user = UserController.getUser(SessionController.getSession());
             Assignment assignment = new Assignment(user, unit, date, type);
             assignment.save();
             refreshView(event);

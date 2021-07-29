@@ -18,16 +18,17 @@ public class CatController {
     private static PreparedStatement statement = null;
     private static ResultSet results = null;
 
-    private static boolean checkCatExists(UUID uuid) {
+    private static boolean checkCatExists(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE cat_id=?";
+            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE ( users.user_id=? AND cat_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid);
             results = statement.executeQuery();
 
             return results.next();
@@ -59,7 +60,7 @@ public class CatController {
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
-            if (!checkCatExists(cat.getUuid())) {
+            if (!checkCatExists(cat.getUuid(), cat.getUser())) {
                 sqlStatement = "INSERT INTO cats (cat_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());
@@ -85,30 +86,31 @@ public class CatController {
     }
 
     // get a single cat
-    public static Cat getCat(UUID uuid) {
+    public static Cat getCat(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            if (checkCatExists(uuid)) {
-                sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE cats.cat_id=?";
+            if (checkCatExists(uuid, user)) {
+                sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE ( users.user_id=? AND cats.cat_id=? )";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setObject(1, uuid);
+                statement.setObject(1, user.getUserId());
+                statement.setObject(2, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                    User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                             results.getString("registration_number"), results.getString("university"),
                             results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                             results.getString("email"), results.getString("password"));
 
-                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                    Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                                     results.getString("code"), results.getString("lecturer"),
                                     results.getInt("pages"));
 
-                    return new Cat((UUID) results.getObject("cat_id"), user, unit, results.getDate("date"), results.getInt("type"));
+                    return new Cat((UUID) results.getObject("cat_id"), fetchedUser, unit, results.getDate("date"), results.getInt("type"));
                 } else {
                     return null;
                 }
@@ -132,7 +134,7 @@ public class CatController {
     }
 
     // return all the cats in our DB
-    public static List<Cat> getCats() {
+    public static List<Cat> getCats(User user) {
 
         assert conn != null;
         String sqlStatement;
@@ -140,21 +142,22 @@ public class CatController {
 
         try {
 
-            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
+            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE users.user_id=?";
             statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, user.getUserId());
             results = statement.executeQuery();
 
             while (results.next()) {
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
 
-                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                cats.add(new Cat((UUID) results.getObject("cat_id"), user, unit, results.getDate("date"),
+                cats.add(new Cat((UUID) results.getObject("cat_id"), fetchedUser, unit, results.getDate("date"),
                                         results.getInt("type")));
             }
 
@@ -183,7 +186,7 @@ public class CatController {
 
         try {
 
-            if(checkCatExists(cat.getUuid())) {
+            if(checkCatExists(cat.getUuid(), cat.getUser())) {
                 sqlStatement = "UPDATE cats SET date=?, unit=?, type=? WHERE cat_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, cat.getDate());
@@ -215,7 +218,7 @@ public class CatController {
 
         try {
 
-            if (checkCatExists(cat.getUuid())) {
+            if (checkCatExists(cat.getUuid(), cat.getUser())) {
                 sqlStatement = "DELETE FROM cats WHERE cat_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());

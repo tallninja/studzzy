@@ -35,7 +35,7 @@ public class Submission implements Remindable {
     }
 
     public Unit getUnitObject() {
-        return UnitController.getUnit(unit.getUuid());
+        return UnitController.getUnit(unit.getUuid(), unit.getUser());
     }
 
     @Override

@@ -19,14 +19,15 @@ public class ReminderController {
     private static ResultSet results = null;
 
     // checks if the reminder exists
-    private static boolean checkReminderExists(UUID uuid) {
+    private static boolean checkReminderExists(UUID uuid, User user) {
 
         assert conn != null;
 
         try {
-            String sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE reminder_id=?";
+            String sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE ( users.user_id=? AND reminder_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid);
             results = statement.executeQuery();
             return results.next();
         } catch(Exception e) {
@@ -55,7 +56,7 @@ public class ReminderController {
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
-            if (!checkReminderExists(reminder.getUuid())) {
+            if (!checkReminderExists(reminder.getUuid(), reminder.getUser())) {
                 sqlStatement = "INSERT INTO reminders (reminder_id, _user, date, description) VALUES (?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, reminder.getUuid());
@@ -81,24 +82,25 @@ public class ReminderController {
     }
 
     // get a single reminder
-    public static Reminder getReminder(UUID uuid) {
+    public static Reminder getReminder(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
-            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE reminder_id=?";
+            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE ( users.user_id=? AND reminder_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid, Types.OTHER);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid, Types.OTHER);
             results = statement.executeQuery();
 
             if (results.next()) {
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
 
-                return new Reminder((UUID) results.getObject("reminder_id"), user, results.getString("description"),
+                return new Reminder((UUID) results.getObject("reminder_id"), fetchedUser, results.getString("description"),
                         results.getDate("date"));
             } else {
                 return null;
@@ -120,7 +122,7 @@ public class ReminderController {
     }
 
     // get all the reminders
-    public static List<Reminder> getReminders() {
+    public static List<Reminder> getReminders(User user) {
 
         assert conn != null;
         String sqlStatement;
@@ -128,17 +130,18 @@ public class ReminderController {
 
         try {
 
-            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user";
+            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE users.user_id=?";
             statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, user.getUserId());
             results = statement.executeQuery();
 
             while (results.next()) {
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
 
-                reminders.add(new Reminder((UUID) results.getObject("reminder_id"), user, results.getString("description"),
+                reminders.add(new Reminder((UUID) results.getObject("reminder_id"), fetchedUser, results.getString("description"),
                         results.getDate("date")));
             }
 
@@ -168,7 +171,7 @@ public class ReminderController {
 
         try {
 
-            if (checkReminderExists(reminder.getUuid())) {
+            if (checkReminderExists(reminder.getUuid(), reminder.getUser())) {
                 sqlStatement = "UPDATE reminders SET date=?, description=? WHERE reminder_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, reminder.getDate());

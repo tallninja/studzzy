@@ -18,16 +18,17 @@ public class ExamController {
     private static PreparedStatement statement = null;
     private static ResultSet results = null;
 
-    private static boolean checkCatExists(UUID uuid) {
+    private static boolean checkCatExists(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user WHERE exam_id=?";
+            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user WHERE ( users.user_id=? AND exam_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid);
             results = statement.executeQuery();
 
             return results.next();
@@ -59,7 +60,7 @@ public class ExamController {
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
-            if (!checkCatExists(exam.getUuid())) {
+            if (!checkCatExists(exam.getUuid(), exam.getUser())) {
                 sqlStatement = "INSERT INTO exams (exam_id, _user, unit, date) VALUES (?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());
@@ -84,30 +85,31 @@ public class ExamController {
     }
 
     // get a single exam
-    public static Exam getExam(UUID uuid) {
+    public static Exam getExam(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            if (checkCatExists(uuid)) {
-                sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE exams.exam_id=?";
+            if (checkCatExists(uuid, user)) {
+                sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE ( users.user_id=? AND exams.exam_id=? )";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setObject(1, uuid);
+                statement.setObject(1, user.getUserId());
+                statement.setObject(2, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                    User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                             results.getString("registration_number"), results.getString("university"),
                             results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                             results.getString("email"), results.getString("password"));
 
-                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                    Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                             results.getString("code"), results.getString("lecturer"),
                             results.getInt("pages"));
 
-                    return new Exam((UUID) results.getObject("exam_id"), user, unit, results.getDate("date"));
+                    return new Exam((UUID) results.getObject("exam_id"), fetchedUser, unit, results.getDate("date"));
                 } else {
                     return null;
                 }
@@ -131,7 +133,7 @@ public class ExamController {
     }
 
     // return all the exams in our DB
-    public static List<Exam> getExams() {
+    public static List<Exam> getExams(User user) {
 
         assert conn != null;
         String sqlStatement;
@@ -139,21 +141,22 @@ public class ExamController {
 
         try {
 
-            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
+            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE users.user_id=?";
             statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, user.getUserId());
             results = statement.executeQuery();
 
             while (results.next()) {
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
 
-                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                cats.add(new Exam((UUID) results.getObject("exam_id"), user, unit,
+                cats.add(new Exam((UUID) results.getObject("exam_id"), fetchedUser, unit,
                                     results.getDate("date")));
             }
 
@@ -182,7 +185,7 @@ public class ExamController {
 
         try {
 
-            if(checkCatExists(exam.getUuid())) {
+            if(checkCatExists(exam.getUuid(), exam.getUser())) {
                 sqlStatement = "UPDATE exams SET date=?, unit=? WHERE exam_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, exam.getDate());
@@ -213,7 +216,7 @@ public class ExamController {
 
         try {
 
-            if (checkCatExists(exam.getUuid())) {
+            if (checkCatExists(exam.getUuid(), exam.getUser())) {
                 sqlStatement = "DELETE FROM exams WHERE exam_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());

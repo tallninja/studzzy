@@ -99,21 +99,22 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all the units %n");
-        List<Unit> units = UnitController.getUnits();
+        assert user != null;
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
         for(Unit unit : units) {
             System.out.println(unit);
         }
 
         System.out.printf("%n Updating a unit %n");
-        System.out.println("Before Update: " + UnitController.getUnit(fake.getUuid()));
+        System.out.println("Before Update: " + UnitController.getUnit(fake.getUuid(), user));
         fake.update("test", "test", "test", 211);
-        System.out.println("After Update: " + UnitController.getUnit(fake.getUuid()));
+        System.out.println("After Update: " + UnitController.getUnit(fake.getUuid(), user));
 
         System.out.printf("%n Deleting a unit %n");
-        System.out.println("Before Deletion: " + UnitController.getUnit(fake.getUuid()));
+        System.out.println("Before Deletion: " + UnitController.getUnit(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Deletion: " + UnitController.getUnit(fake.getUuid()));
+        System.out.println("After Deletion: " + UnitController.getUnit(fake.getUuid(), user));
 
     }
 
@@ -134,28 +135,28 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all reminders %n");
-        List <Reminder> reminders = ReminderController.getReminders();
+        List <Reminder> reminders = ReminderController.getReminders(user);
         assert reminders != null;
         for(Reminder reminder : reminders) {
             System.out.println(reminder);
         }
 
         System.out.printf("%n Updating a reminder %n");
-        System.out.println("Before Update: " + ReminderController.getReminder(fake.getUuid()));
+        System.out.println("Before Update: " + ReminderController.getReminder(fake.getUuid(), user));
         fake.update("test", new Date(System.currentTimeMillis()));
-        System.out.println("After Update: " + ReminderController.getReminder(fake.getUuid()));
+        System.out.println("After Update: " + ReminderController.getReminder(fake.getUuid(), user));
 
         System.out.printf("%n Deleting a reminder %n");
-        System.out.println("Before Delete: " + ReminderController.getReminder(fake.getUuid()));
+        System.out.println("Before Delete: " + ReminderController.getReminder(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Delete: " + ReminderController.getReminder(fake.getUuid()));
+        System.out.println("After Delete: " + ReminderController.getReminder(fake.getUuid(), user));
     }
 
     public static void testCatController() {
 
         User user = UserController.getUser("ernestwambua2@gmail.com");
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
 
         CatController.dropTable();
@@ -172,21 +173,21 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all CATs %n");
-        List<Cat> cats = CatController.getCats();
+        List<Cat> cats = CatController.getCats(user);
         assert cats != null;
         for(Cat cat : cats) {
             System.out.println(cat);
         }
 
         System.out.printf("%n Edit a CAT %n");
-        System.out.println("Before Update: " + CatController.getCat(fake.getUuid()));
+        System.out.println("Before Update: " + CatController.getCat(fake.getUuid(), user));
         fake.update(new Date(System.currentTimeMillis()), 2);
-        System.out.println("After Update: " + CatController.getCat(fake.getUuid()));
+        System.out.println("After Update: " + CatController.getCat(fake.getUuid(), user));
 
         System.out.printf("%n Delete a CAT %n");
-        System.out.println("Before Delete: " + CatController.getCat(fake.getUuid()));
+        System.out.println("Before Delete: " + CatController.getCat(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Delete: " + CatController.getCat(fake.getUuid()));
+        System.out.println("After Delete: " + CatController.getCat(fake.getUuid(), user));
 
     }
 
@@ -194,7 +195,7 @@ public class TestController {
 
         User user = UserController.getUser("ernestwambua2@gmail.com");
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
 
         ExamController.dropTable();
@@ -211,21 +212,21 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all exams %n");
-        List<Exam> exams = ExamController.getExams();
+        List<Exam> exams = ExamController.getExams(user);
         assert exams != null;
         for(Exam exam : exams) {
             System.out.println(exam);
         }
 
         System.out.printf("%n Edit an Exam %n");
-        System.out.println("Before Update: " + ExamController.getExam(fake.getUuid()));
+        System.out.println("Before Update: " + ExamController.getExam(fake.getUuid(), user));
         fake.update(new Date(System.currentTimeMillis()));
-        System.out.println("After Update: " + ExamController.getExam(fake.getUuid()));
+        System.out.println("After Update: " + ExamController.getExam(fake.getUuid(), user));
 
         System.out.printf("%n Delete an exam %n");
-        System.out.println("Before Delete: " + ExamController.getExam(fake.getUuid()));
+        System.out.println("Before Delete: " + ExamController.getExam(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Delete: " + ExamController.getExam(fake.getUuid()));
+        System.out.println("After Delete: " + ExamController.getExam(fake.getUuid(), user));
 
     }
 
@@ -233,7 +234,7 @@ public class TestController {
 
         User user = UserController.getUser("ernestwambua2@gmail.com");
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
 
         ReportController.dropTable();
@@ -250,21 +251,21 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all Reports %n");
-        List<Report> reports = ReportController.getReports();
+        List<Report> reports = ReportController.getReports(user);
         assert reports != null;
         for(Report report : reports) {
             System.out.println(report);
         }
 
         System.out.printf("%n Edit a Report %n");
-        System.out.println("Before Update: " + ReportController.getReport(fake.getUuid()));
+        System.out.println("Before Update: " + ReportController.getReport(fake.getUuid(), user));
         fake.update(new Date(System.currentTimeMillis()), 2);
-        System.out.println("After Update: " + ReportController.getReport(fake.getUuid()));
+        System.out.println("After Update: " + ReportController.getReport(fake.getUuid(), user));
 
         System.out.printf("%n Delete a Report %n");
-        System.out.println("Before Delete: " + ReportController.getReport(fake.getUuid()));
+        System.out.println("Before Delete: " + ReportController.getReport(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Delete: " + ReportController.getReport(fake.getUuid()));
+        System.out.println("After Delete: " + ReportController.getReport(fake.getUuid(), user));
 
     }
 
@@ -272,7 +273,7 @@ public class TestController {
 
         User user = UserController.getUser("ernestwambua2@gmail.com");
 
-        List<Unit> units = UnitController.getUnits();
+        List<Unit> units = UnitController.getUnits(user);
         assert units != null;
 
         AssignmentController.dropTable();
@@ -289,21 +290,21 @@ public class TestController {
         fake.save();
 
         System.out.printf("%n List of all Assignments %n");
-        List<Assignment> assignments = AssignmentController.getAssignments();
+        List<Assignment> assignments = AssignmentController.getAssignments(user);
         assert assignments != null;
         for(Assignment assignment : assignments) {
             System.out.println(assignment);
         }
 
         System.out.printf("%n Edit a Assignment %n");
-        System.out.println("Before Update: " + AssignmentController.getAssignment(fake.getUuid()));
+        System.out.println("Before Update: " + AssignmentController.getAssignment(fake.getUuid(), user));
         fake.update(new Date(System.currentTimeMillis()), 2);
-        System.out.println("After Update: " + AssignmentController.getAssignment(fake.getUuid()));
+        System.out.println("After Update: " + AssignmentController.getAssignment(fake.getUuid(), user));
 
         System.out.printf("%n Delete a Assignment %n");
-        System.out.println("Before Delete: " + AssignmentController.getAssignment(fake.getUuid()));
+        System.out.println("Before Delete: " + AssignmentController.getAssignment(fake.getUuid(), user));
         fake.delete();
-        System.out.println("After Update: " + AssignmentController.getAssignment(fake.getUuid()));
+        System.out.println("After Update: " + AssignmentController.getAssignment(fake.getUuid(), user));
 
     }
 

@@ -18,16 +18,17 @@ public class ReportController {
     private static PreparedStatement statement = null;
     private static ResultSet results = null;
 
-    private static boolean checkReportExists(UUID uuid) {
+    private static boolean checkReportExists(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            sqlStatement = "SELECT * FROM users INNER JOIN reports ON users.user_id=_user WHERE report_id=?";
+            sqlStatement = "SELECT * FROM users INNER JOIN reports ON users.user_id=_user WHERE ( users.user_id=? AND report_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid);
             results = statement.executeQuery();
 
             return results.next();
@@ -59,7 +60,7 @@ public class ReportController {
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
-            if (!checkReportExists(report.getUuid())) {
+            if (!checkReportExists(report.getUuid(), report.getUser())) {
                 sqlStatement = "INSERT INTO reports (report_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUuid());
@@ -85,25 +86,26 @@ public class ReportController {
     }
 
     // get a single Report
-    public static Report getReport(UUID uuid) {
+    public static Report getReport(UUID uuid, User user) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
 
-            if (checkReportExists(uuid)) {
-                sqlStatement = "SELECT * FROM reports INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE reports.report_id=?";
+            if (checkReportExists(uuid, user)) {
+                sqlStatement = "SELECT * FROM reports INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE ( users.user_id=? AND reports.report_id=? )";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setObject(1, uuid);
+                statement.setObject(1, user.getUserId());
+                statement.setObject(2, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                    User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                             results.getString("registration_number"), results.getString("university"),
                             results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                             results.getString("email"), results.getString("password"));
-                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                    Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                             results.getString("code"), results.getString("lecturer"),
                             results.getInt("pages"));
 
@@ -131,7 +133,7 @@ public class ReportController {
     }
 
     // return all the Reports in our DB
-    public static List<Report> getReports() {
+    public static List<Report> getReports(User user) {
 
         assert conn != null;
         String sqlStatement;
@@ -139,21 +141,22 @@ public class ReportController {
 
         try {
 
-            sqlStatement = "SELECT * FROM reports INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
+            sqlStatement = "SELECT * FROM reports INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE users.user_id=?";
             statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, user.getUserId());
             results = statement.executeQuery();
 
             while (results.next()) {
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
 
-                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                Unit unit = new Unit((UUID) results.getObject("unit"), fetchedUser, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                reports.add(new Report((UUID) results.getObject("report_id"), user, unit, results.getDate("date"),
+                reports.add(new Report((UUID) results.getObject("report_id"), fetchedUser, unit, results.getDate("date"),
                         results.getInt("type")));
             }
 
@@ -182,7 +185,7 @@ public class ReportController {
 
         try {
 
-            if(checkReportExists(report.getUuid())) {
+            if(checkReportExists(report.getUuid(), report.getUser())) {
                 sqlStatement = "UPDATE reports SET  unit=?, date=?, type=? WHERE report_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUnitObject().getUuid());
@@ -214,7 +217,7 @@ public class ReportController {
 
         try {
 
-            if (checkReportExists(report.getUuid())) {
+            if (checkReportExists(report.getUuid(), report.getUser())) {
                 sqlStatement = "DELETE FROM reports WHERE report_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUuid());

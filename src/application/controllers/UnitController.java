@@ -16,16 +16,17 @@ public class UnitController {
     private static final Connection conn = Database.getConn();
 
     // checks if a unit exists before creating or updating
-    public static boolean checkUnitExists(UUID uuid) {
+    public static boolean checkUnitExists(UUID uuid, User user) {
 
         assert conn != null;
         PreparedStatement statement = null;
         ResultSet results = null;
 
         try {
-            String sqlStatement = "SELECT * FROM users INNER JOIN units ON users.user_id=_user WHERE unit_id=?";
+            String sqlStatement = "SELECT * FROM users INNER JOIN units ON users.user_id=_user WHERE ( users.user_id=? AND unit_id=? )";
             statement = conn.prepareStatement(sqlStatement);
-            statement.setObject(1, uuid);
+            statement.setObject(1, user.getUserId());
+            statement.setObject(2, uuid);
             results = statement.executeQuery();
             return results.next();
         } catch(Exception e) {
@@ -57,7 +58,7 @@ public class UnitController {
             statement.execute();
 
             // first check if a user exists
-            if (!checkUnitExists(unit.getUuid())) {
+            if (!checkUnitExists(unit.getUuid(), unit.getUser())) {
                 sqlStatement = "INSERT INTO units (unit_id, _user, name, code, lecturer, pages) VALUES (?, ?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, unit.getUuid());
@@ -84,7 +85,7 @@ public class UnitController {
     }
 
     // gets a single unit
-    public static Unit getUnit(UUID uuid) {
+    public static Unit getUnit(UUID uuid, User user) {
 
         assert conn != null;
         PreparedStatement statement = null;
@@ -92,19 +93,20 @@ public class UnitController {
         ResultSet results = null;
 
         try {
-            if(checkUnitExists(uuid)) {
-                sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user WHERE unit_id=?";
+            if(checkUnitExists(uuid, user)) {
+                sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user WHERE ( users.user_id=? AND unit_id=? )";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setObject(1, uuid);
+                statement.setObject(1, user.getUserId());
+                statement.setObject(2, uuid);
                 results = statement.executeQuery();
 
 
                 results.next();
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
-                return new Unit((UUID) results.getObject("unit_id"), user, results.getString("name"), results.getString("code"),
+                return new Unit((UUID) results.getObject("unit_id"), fetchedUser, results.getString("name"), results.getString("code"),
                         results.getString("lecturer"), results.getInt("pages"));
 
 
@@ -127,7 +129,7 @@ public class UnitController {
     }
 
     // gets a list of all the units in our DB
-    public static List<Unit> getUnits() {
+    public static List<Unit> getUnits(User user) {
 
         assert  conn != null;
         PreparedStatement statement = null;
@@ -136,17 +138,18 @@ public class UnitController {
 
 
         try {
-            sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user";
+            sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user WHERE users.user_id=?";
             statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, user.getUserId());
             results = statement.executeQuery();
 
             List<Unit> users = new ArrayList<>();
             while(results.next()){
-                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                User fetchedUser = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                         results.getString("registration_number"), results.getString("university"),
                         results.getDate("start_sem_date"), results.getDate("end_sem_date"),
                         results.getString("email"), results.getString("password"));
-                Unit unit = new Unit((UUID) results.getObject("unit_id"), user, results.getString("name"), results.getString("code"),
+                Unit unit = new Unit((UUID) results.getObject("unit_id"), fetchedUser, results.getString("name"), results.getString("code"),
                         results.getString("lecturer"), results.getInt("pages"));
                 users.add(unit);
             }
@@ -176,7 +179,7 @@ public class UnitController {
         String sqlStatement;
 
         try {
-            if (checkUnitExists(unit.getUuid())) {
+            if (checkUnitExists(unit.getUuid(), unit.getUser())) {
                 sqlStatement = "UPDATE units SET name=?, code=?, lecturer=?, pages=? WHERE unit_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setString(1, unit.getName());
@@ -211,7 +214,7 @@ public class UnitController {
         String sqlStatement = "DELETE FROM units WHERE unit_id=?";
 
         try {
-            if(checkUnitExists(unit.getUuid())) {
+            if(checkUnitExists(unit.getUuid(), unit.getUser())) {
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, unit.getUuid());
                 statement.executeUpdate();

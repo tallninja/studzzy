@@ -135,13 +135,14 @@ public class UserController {
             results = statement.executeQuery();
 
 
-            results.next();
-            return new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
-                    results.getString("registration_number"), results.getString("university"),
-                    results.getDate("start_sem_date"), results.getDate("end_sem_date"),
-                    results.getString("email"), results.getString("password"));
-
-
+            if (results.next()) {
+                return new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+            } else {
+                return null;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

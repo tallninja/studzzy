@@ -81,11 +81,14 @@ public class RemindersController implements Initializable {
     DatePicker reminderDatePicker;
 
 
+    User user = UserController.getUser(SessionController.getSession());
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         ObservableList<Reminder> remindersObservableList = FXCollections.observableArrayList();
-        List<Reminder> reminders = ReminderController.getReminders();
+        List<Reminder> reminders = ReminderController.getReminders(user);
         assert reminders != null;
         remindersObservableList.addAll(reminders);
 
@@ -182,8 +185,6 @@ public class RemindersController implements Initializable {
 
             String description = reminderDescriptionTextArea.getText();
             Date date = new Date(dateStringConverter.toMills(reminderDatePicker.getValue()));
-
-            User user = UserController.getUser(SessionController.getSession());
             Reminder reminder = new Reminder(user, description, date);
             reminder.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
