@@ -95,6 +95,46 @@ public class UserController {
             results = statement.executeQuery();
 
 
+            if (results.next()) {
+                return new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+            } else {
+                return null;
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
+            return null;
+        } finally {
+            try {
+                if(results != null) {
+                    results.close();
+                    statement.close();
+                }
+            } catch (Exception e) {
+                System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
+            }
+        }
+    }
+
+    // gets a single user
+    public static User getUser(String email) {
+
+        assert conn != null;
+        String sqlStatement;
+
+        try {
+
+            sqlStatement = "SELECT * FROM users WHERE email=?";
+            statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, email);
+            results = statement.executeQuery();
+
+
             results.next();
             return new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
                     results.getString("registration_number"), results.getString("university"),
@@ -228,7 +268,7 @@ public class UserController {
 
         try {
 
-            sqlStatement = "DROP TABLE IF EXISTS users";
+            sqlStatement = "DROP TABLE IF EXISTS users CASCADE";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

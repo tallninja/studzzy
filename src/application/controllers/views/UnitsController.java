@@ -203,8 +203,8 @@ public class UnitsController implements Initializable {
         int numOfPages = numberOfPagesField.getValue();
 
         if (!unitName.equals("") && !unitCode.equals("") && !unitLecturer.equals("")) {
-            Unit unit = new Unit(unitName, unitCode, unitLecturer, numOfPages);
-            unit.save();
+//            Unit unit = new Unit(unitName, unitCode, unitLecturer, numOfPages);
+//            unit.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         }

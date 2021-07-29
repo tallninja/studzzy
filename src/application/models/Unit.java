@@ -23,8 +23,9 @@ public class Unit {
         UnitController.saveUnit(this);
     }
 
-    public Unit(String name, String code, String lecturer, int pages) {
+    public Unit(User user, String name, String code, String lecturer, int pages) {
         this.setUuid(UUID.randomUUID());
+        this.setUser(user);
         this.setName(name);
         this.setCode(code);
         this.setLecturer(lecturer);

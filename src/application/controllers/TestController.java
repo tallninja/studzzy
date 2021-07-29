@@ -14,7 +14,7 @@ public class TestController {
 
           testUserController();
           testUnitController();
-          // testReminderController();
+          testReminderController();
           testCatController();
           testExamController();
           testReportController();
@@ -60,33 +60,35 @@ public class TestController {
         }
 
         System.out.printf("%n Update a User %n");
-        System.out.println("Before Update:  " + UserController.getUser("fake@email.com"));
+        System.out.println("Before Update:  " + UserController.getUser(fakeUser.getUserId()));
 
         fakeUser.update("Test", "Test", "Test",
                 "Test", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
 
-        System.out.println("After Update:  " + UserController.getUser("fake@email.com"));
+        System.out.println("After Update:  " + UserController.getUser(fakeUser.getUserId()));
 
         System.out.printf("%n Delete a User %n");
-        System.out.println("Before Delete:  " + UserController.getUser("fake@email.com"));
+        System.out.println("Before Delete:  " + UserController.getUser(fakeUser.getUserId()));
 
         fakeUser.delete();
 
-        System.out.println("After Update:  " + UserController.getUser("fake@email.com"));
+        System.out.println("After Update:  " + UserController.getUser(fakeUser.getUserId()));
 
     }
 
     public static void testUnitController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         UnitController.dropTable();
 
-        Unit unit1 = new Unit("PDE", "SMA2122", "Dr William Ndung'u", 20);
-        Unit unit2 = new Unit("ODE", "SMA2121", "Mr Oketch", 77);
-        Unit unit3 = new Unit("Programming 2", "ETI2301", "Mr Lincoln Kamau", 43);
-        Unit unit4 = new Unit("Analogue 3", "ETI2303", "Mr Ngotho", 20);
-        Unit unit5 = new Unit("IC", "ETI2344", "Mr Omae", 344);
-        Unit unit6 = new Unit("Digital Electronics", "ETI3322", "Mr Kelvin Mwongera", 22);
-        Unit fake = new Unit("fake", "fake", "fake", 12);
+        Unit unit1 = new Unit(user, "PDE", "SMA2122", "Dr William Ndung'u", 20);
+        Unit unit2 = new Unit(user,"ODE", "SMA2121", "Mr Oketch", 77);
+        Unit unit3 = new Unit(user, "Programming 2", "ETI2301", "Mr Lincoln Kamau", 43);
+        Unit unit4 = new Unit(user, "Analogue 3", "ETI2303", "Mr Ngotho", 20);
+        Unit unit5 = new Unit(user, "IC", "ETI2344", "Mr Omae", 344);
+        Unit unit6 = new Unit(user, "Digital Electronics", "ETI3322", "Mr Kelvin Mwongera", 22);
+        Unit fake = new Unit(user, "fake", "fake", "fake", 12);
 
         unit1.save();
         unit2.save();
@@ -117,12 +119,14 @@ public class TestController {
 
     public static void testReminderController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         ReminderController.dropTable();
 
-        Reminder reminder1 = new Reminder("reminder1", new Date(System.currentTimeMillis()));
-        Reminder reminder2 = new Reminder("reminder1", new Date(System.currentTimeMillis()));
-        Reminder reminder3 = new Reminder("reminder1", new Date(System.currentTimeMillis()));
-        Reminder fake = new Reminder("fake", new Date(System.currentTimeMillis()));
+        Reminder reminder1 = new Reminder(user, "reminder1", new Date(System.currentTimeMillis()));
+        Reminder reminder2 = new Reminder(user, "reminder1", new Date(System.currentTimeMillis()));
+        Reminder reminder3 = new Reminder(user,"reminder1", new Date(System.currentTimeMillis()));
+        Reminder fake = new Reminder(user,"fake", new Date(System.currentTimeMillis()));
 
         reminder1.save();
         reminder2.save();
@@ -149,15 +153,17 @@ public class TestController {
 
     public static void testCatController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         List<Unit> units = UnitController.getUnits();
         assert units != null;
 
         CatController.dropTable();
-        Cat cat1 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Cat cat2 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Cat cat3 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Cat cat4 = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Cat fake = new Cat(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Cat cat1 = new Cat(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Cat cat2 = new Cat(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Cat cat3 = new Cat(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Cat cat4 = new Cat(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Cat fake = new Cat(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         cat1.save();
         cat2.save();
@@ -180,21 +186,23 @@ public class TestController {
         System.out.printf("%n Delete a CAT %n");
         System.out.println("Before Delete: " + CatController.getCat(fake.getUuid()));
         fake.delete();
-        System.out.println("After Update: " + CatController.getCat(fake.getUuid()));
+        System.out.println("After Delete: " + CatController.getCat(fake.getUuid()));
 
     }
 
     public static void testExamController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         List<Unit> units = UnitController.getUnits();
         assert units != null;
 
         ExamController.dropTable();
-        Exam exam1 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
-        Exam exam2 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
-        Exam exam3 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
-        Exam exam4 = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
-        Exam fake = new Exam(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam1 = new Exam(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam2 = new Exam(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam3 = new Exam(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam exam4 = new Exam(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
+        Exam fake = new Exam(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()));
 
         exam1.save();
         exam2.save();
@@ -217,21 +225,23 @@ public class TestController {
         System.out.printf("%n Delete an exam %n");
         System.out.println("Before Delete: " + ExamController.getExam(fake.getUuid()));
         fake.delete();
-        System.out.println("After Update: " + ExamController.getExam(fake.getUuid()));
+        System.out.println("After Delete: " + ExamController.getExam(fake.getUuid()));
 
     }
 
     public static void testReportController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         List<Unit> units = UnitController.getUnits();
         assert units != null;
 
         ReportController.dropTable();
-        Report report1 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Report report2 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Report report3 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Report report4 = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Report fake = new Report(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Report report1 = new Report(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Report report2 = new Report(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Report report3 = new Report(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Report report4 = new Report(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Report fake = new Report(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         report1.save();
         report2.save();
@@ -254,21 +264,23 @@ public class TestController {
         System.out.printf("%n Delete a Report %n");
         System.out.println("Before Delete: " + ReportController.getReport(fake.getUuid()));
         fake.delete();
-        System.out.println("After Update: " + ReportController.getReport(fake.getUuid()));
+        System.out.println("After Delete: " + ReportController.getReport(fake.getUuid()));
 
     }
 
     public static void testAssignmentController() {
 
+        User user = UserController.getUser("ernestwambua2@gmail.com");
+
         List<Unit> units = UnitController.getUnits();
         assert units != null;
 
         AssignmentController.dropTable();
-        Assignment assignment1 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Assignment assignment2 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Assignment assignment3 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
-        Assignment assignment4 = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
-        Assignment fake = new Assignment(units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment1 = new Assignment(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment2 = new Assignment(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Assignment assignment3 = new Assignment(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
+        Assignment assignment4 = new Assignment(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 2);
+        Assignment fake = new Assignment(user, units.get((int) (Math.random() * units.size())), new Date(System.currentTimeMillis()), 1);
 
         assignment1.save();
         assignment2.save();

@@ -325,8 +325,8 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(reportDatePicker.getValue()));
             int type = reportTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-            Report report = new Report(unit, date, type);
-            report.save();
+//            Report report = new Report(unit, date, type);
+//            report.save();
             refreshView(event);
         }
     }
@@ -340,8 +340,8 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(assignmentDatePicker.getValue()));
             int type = assignmentTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-            Assignment assignment = new Assignment(unit, date, type);
-            assignment.save();
+//            Assignment assignment = new Assignment(unit, date, type);
+//            assignment.save();
             refreshView(event);
         }
     }

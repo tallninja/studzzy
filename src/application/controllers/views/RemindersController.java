@@ -181,8 +181,8 @@ public class RemindersController implements Initializable {
             String description = reminderDescriptionTextArea.getText();
             Date date = new Date(dateStringConverter.toMills(reminderDatePicker.getValue()));
 
-            Reminder reminder = new Reminder(description, date);
-            reminder.save();
+//            Reminder reminder = new Reminder(description, date);
+//            reminder.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         }

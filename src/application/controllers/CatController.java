@@ -140,7 +140,7 @@ public class CatController {
 
         try {
 
-            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, cats.uuid, cats.unit, cats.date, cats.type FROM units INNER JOIN cats ON units.uuid=unit";
+            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 

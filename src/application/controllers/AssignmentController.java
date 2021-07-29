@@ -55,12 +55,12 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = "CREATE TABLE IF NOT EXISTS assignments (id SERIAL UNIQUE, assignment_id UUID primary key, _user UUID references users(user_id), unit UUID references units(uuid), date DATE, type INTEGER)";
+            sqlStatement = "CREATE TABLE IF NOT EXISTS assignments (id SERIAL UNIQUE, assignment_id UUID primary key, _user UUID references users(user_id), unit UUID references units(unit_id), date DATE, type INTEGER)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = "INSERT INTO assignments (cat_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
+                sqlStatement = "INSERT INTO assignments (assignment_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUuid());
                 statement.setObject(2, assignment.getUser().getUserId());
@@ -93,7 +93,7 @@ public class AssignmentController {
         try {
 
             if (checkAssignmentExists(uuid)) {
-                sqlStatement = "SELECT * FROM assignments INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.units_id=unit WHERE assignments.assignment_id=?";
+                sqlStatement = "SELECT * FROM assignments INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE assignments.assignment_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
@@ -184,7 +184,7 @@ public class AssignmentController {
         try {
 
             if(checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = "UPDATE assignments SET unit=?, date=?, %s=? WHERE assignment_id=?";
+                sqlStatement = "UPDATE assignments SET unit=?, date=?, type=? WHERE assignment_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUnitObject().getUuid());
                 statement.setDate(2, assignment.getDate());

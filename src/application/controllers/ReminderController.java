@@ -56,7 +56,7 @@ public class ReminderController {
             statement.execute();
 
             if (!checkReminderExists(reminder.getUuid())) {
-                sqlStatement = "INSERT INTO reminders (report_id, _user, date, description) VALUES (?, ?, ?, ?)";
+                sqlStatement = "INSERT INTO reminders (reminder_id, _user, date, description) VALUES (?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, reminder.getUuid());
                 statement.setObject(2, reminder.getUser().getUserId());

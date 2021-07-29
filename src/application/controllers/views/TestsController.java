@@ -311,8 +311,8 @@ public class TestsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(catDatePicker.getValue()));
             int type = catTypesCombo.getValue().equals("Sitting") ? 1 : 2;
 
-            Cat cat = new Cat(unit, date, type);
-            cat.save();
+//            Cat cat = new Cat(unit, date, type);
+//            cat.save();
             refreshView(event);
         }
     }
@@ -325,8 +325,8 @@ public class TestsController implements Initializable {
             Unit unit = examUnitsCombo.getValue();
             Date date = new Date(dateStringConverter.toMills(examDatePicker.getValue()));
 
-            Exam exam = new Exam(unit, date);
-            exam.save();
+//            Exam exam = new Exam(unit, date);
+//            exam.save();
             refreshView(event);
         }
     }

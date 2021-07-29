@@ -215,7 +215,7 @@ public class ReportController {
         try {
 
             if (checkReportExists(report.getUuid())) {
-                sqlStatement = "DELETE FROM exams WHERE exam_id=?";
+                sqlStatement = "DELETE FROM reports WHERE report_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, report.getUuid());
                 statement.executeUpdate();
