@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.models.Database;
 import application.models.Reminder;
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,11 +14,6 @@ import java.util.UUID;
 
 public class ReminderController {
 
-    private static final String TABLE_REMINDERS = "reminders";
-    private static final String COLUMN_UUID = "uuid";
-    private static final String COLUMN_DESCRIPTION = "description";
-    private static final String COLUMN_DATE = "date";
-
     private static final Connection conn = Database.getConn();
     private static PreparedStatement statement = null;
     private static ResultSet results = null;
@@ -28,7 +24,7 @@ public class ReminderController {
         assert conn != null;
 
         try {
-            String sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_REMINDERS, COLUMN_UUID);
+            String sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE reminder_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid);
             results = statement.executeQuery();
@@ -55,18 +51,17 @@ public class ReminderController {
         String sqlStatement;
 
         try {
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE primary key, %s UUID, %s TEXT, %s TEXT)",
-                                                 TABLE_REMINDERS, COLUMN_UUID, COLUMN_DATE, COLUMN_DESCRIPTION);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS reminders (id SERIAL UNIQUE, reminder_id UUID primary key, _user UUID references users(user_id), date DATE, description TEXT)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkReminderExists(reminder.getUuid())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
-                                               TABLE_REMINDERS, COLUMN_UUID, COLUMN_DATE, COLUMN_DESCRIPTION);
+                sqlStatement = "INSERT INTO reminders (report_id, _user, date, description) VALUES (?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, reminder.getUuid());
-                statement.setDate(2, reminder.getDate());
-                statement.setString(3, reminder.getDescription());
+                statement.setObject(2, reminder.getUser().getUserId());
+                statement.setDate(3, reminder.getDate());
+                statement.setString(4, reminder.getDescription());
                 statement.executeUpdate();
 
             }
@@ -92,14 +87,19 @@ public class ReminderController {
         String sqlStatement;
 
         try {
-            sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_REMINDERS, COLUMN_UUID);
+            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user WHERE reminder_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid, Types.OTHER);
             results = statement.executeQuery();
 
             if (results.next()) {
-                return new Reminder((UUID) results.getObject(COLUMN_UUID), results.getString(COLUMN_DESCRIPTION),
-                        results.getDate(COLUMN_DATE));
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+
+                return new Reminder((UUID) results.getObject("reminder_id"), user, results.getString("description"),
+                        results.getDate("date"));
             } else {
                 return null;
             }
@@ -128,13 +128,18 @@ public class ReminderController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_REMINDERS);
+            sqlStatement = "SELECT * FROM reminders INNER JOIN users ON users.user_id=_user";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                reminders.add(new Reminder((UUID) results.getObject(COLUMN_UUID) , results.getString(COLUMN_DESCRIPTION),
-                        results.getDate(COLUMN_DATE)));
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+
+                reminders.add(new Reminder((UUID) results.getObject("reminder_id"), user, results.getString("description"),
+                        results.getDate("date")));
             }
 
             return  reminders;
@@ -164,8 +169,7 @@ public class ReminderController {
         try {
 
             if (checkReminderExists(reminder.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?",
-                        TABLE_REMINDERS, COLUMN_DATE, COLUMN_DESCRIPTION, COLUMN_UUID);
+                sqlStatement = "UPDATE reminders SET date=?, description=? WHERE reminder_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, reminder.getDate());
                 statement.setString(2, reminder.getDescription());
@@ -195,7 +199,7 @@ public class ReminderController {
 
         try {
 
-            sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_REMINDERS, COLUMN_UUID);
+            sqlStatement = "DELETE FROM reminders WHERE reminder_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, reminder.getUuid());
             statement.executeUpdate();
@@ -222,7 +226,7 @@ public class ReminderController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s", TABLE_REMINDERS);
+            sqlStatement = "DROP TABLE IF EXISTS reminders";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

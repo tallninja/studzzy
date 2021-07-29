@@ -16,14 +16,14 @@ public class Assignment extends Submission {
     private UUID uuid;
     private int type;
 
-    public Assignment(UUID uuid, Unit unit, Date date, int type) {
-        super(unit, date);
+    public Assignment(UUID uuid, User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Assignment(Unit unit, Date date, int type) {
-        super(unit, date);
+    public Assignment(User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
     }
@@ -47,7 +47,7 @@ public class Assignment extends Submission {
     @Override
     public void  setReminder() {
         String description = String.format("%s ASSIGNMENT", this.getUnitObject().getName());
-        Reminder reminder = new Reminder(description, this.getDate());
+        Reminder reminder = new Reminder(this.getUser(), description, this.getDate());
         reminder.save();
     }
 

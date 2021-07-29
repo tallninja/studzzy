@@ -3,6 +3,7 @@ package application.controllers;
 import application.models.Database;
 import application.models.Exam;
 import application.models.Unit;
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,11 +13,6 @@ import java.util.List;
 import java.util.UUID; // Universally Unique ID
 
 public class ExamController {
-
-    private static final String TABLE_EXAMS = "exams";
-    private static final String COLUMN_UUID = "uuid";
-    private static final String COLUMN_UNIT = "unit";
-    private static final String COLUMN_DATE = "date";
 
     private static final Connection conn = Database.getConn();
     private static PreparedStatement statement = null;
@@ -29,7 +25,7 @@ public class ExamController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_EXAMS, COLUMN_UUID);
+            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user WHERE exam_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid);
             results = statement.executeQuery();
@@ -51,7 +47,7 @@ public class ExamController {
 
     }
 
-    // save a cat to our DB
+    // save a exams to our DB
     public static void saveExam(Exam exam) {
 
         assert conn != null;
@@ -59,19 +55,17 @@ public class ExamController {
 
         try {
 
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE, " +
-                            "%s UUID primary key, %s UUID references units(uuid), %s DATE)",
-                    TABLE_EXAMS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS exams (id SERIAL UNIQUE, exam_id UUID primary key, _user UUID references users(user_id), unit UUID references units(unit_id), date DATE)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkCatExists(exam.getUuid())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
-                        TABLE_EXAMS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE);
+                sqlStatement = "INSERT INTO exams (exam_id, _user, unit, date) VALUES (?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());
-                statement.setObject(2, exam.getUnitObject().getUuid());
-                statement.setDate(3, exam.getDate());
+                statement.setObject(2, exam.getUser().getUserId());
+                statement.setObject(3, exam.getUnitObject().getUuid());
+                statement.setDate(4, exam.getDate());
                 statement.executeUpdate();
             }
 
@@ -89,7 +83,7 @@ public class ExamController {
 
     }
 
-    // get a single cat
+    // get a single exam
     public static Exam getExam(UUID uuid) {
 
         assert conn != null;
@@ -98,17 +92,22 @@ public class ExamController {
         try {
 
             if (checkCatExists(uuid)) {
-                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, exams.uuid, exams.unit, exams.date FROM units INNER JOIN exams ON units.uuid=unit WHERE exams.uuid=?";
+                sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE exams.exam_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                            results.getString("registration_number"), results.getString("university"),
+                            results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                            results.getString("email"), results.getString("password"));
+
+                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
                             results.getString("code"), results.getString("lecturer"),
                             results.getInt("pages"));
 
-                    return new Exam((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE));
+                    return new Exam((UUID) results.getObject("exam_id"), user, unit, results.getDate("date"));
                 } else {
                     return null;
                 }
@@ -131,7 +130,7 @@ public class ExamController {
 
     }
 
-    // return all the cats in our DB
+    // return all the exams in our DB
     public static List<Exam> getExams() {
 
         assert conn != null;
@@ -140,18 +139,22 @@ public class ExamController {
 
         try {
 
-            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, exams.uuid, exams.unit, exams.date FROM units INNER JOIN exams ON units.uuid=unit";
+            sqlStatement = "SELECT * FROM exams INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
 
-                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                cats.add(new Exam((UUID) results.getObject(COLUMN_UUID), unit,
-                                    results.getDate(COLUMN_DATE)));
+                cats.add(new Exam((UUID) results.getObject("exam_id"), user, unit,
+                                    results.getDate("date")));
             }
 
             return cats;
@@ -171,7 +174,7 @@ public class ExamController {
 
     }
 
-    // edit a cat
+    // edit an exam
     public static void editExam(Exam exam) {
 
         assert conn != null;
@@ -180,7 +183,7 @@ public class ExamController {
         try {
 
             if(checkCatExists(exam.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=? WHERE %s=?", TABLE_EXAMS, COLUMN_DATE, COLUMN_UNIT, COLUMN_UUID);
+                sqlStatement = "UPDATE exams SET date=?, unit=? WHERE exam_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, exam.getDate());
                 statement.setObject(2, exam.getUnitObject().getUuid());
@@ -202,7 +205,7 @@ public class ExamController {
 
     }
 
-    // delete a cat
+    // delete an exam
     public static void deleteExam(Exam exam) {
 
         assert conn != null;
@@ -211,7 +214,7 @@ public class ExamController {
         try {
 
             if (checkCatExists(exam.getUuid())) {
-                sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_EXAMS, COLUMN_UUID);
+                sqlStatement = "DELETE FROM exams WHERE exam_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, exam.getUuid());
                 statement.executeUpdate();
@@ -231,33 +234,8 @@ public class ExamController {
 
     }
 
-    // delete CATs table
-    public static void deleteAll() {
 
-        assert conn != null;
-        String sqlStatement;
-
-        try {
-
-            sqlStatement = String.format("DELETE FROM %s WHERE %s=*", TABLE_EXAMS, COLUMN_UUID);
-            statement = conn.prepareStatement(sqlStatement);
-            statement.execute();
-
-        } catch (Exception e) {
-            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-            }
-        }
-
-    }
-
-    // delete CATs table
+    // delete exams table
     public static void dropTable() {
 
         assert conn != null;
@@ -265,7 +243,7 @@ public class ExamController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s", TABLE_EXAMS);
+            sqlStatement = "DROP TABLE IF EXISTS exams";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

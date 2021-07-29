@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.models.Database;
 import application.models.Unit;
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,13 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class UnitController {
-
-    public static final String TABLE_UNITS = "units";
-    public static final String COLUMN_UUID = "uuid";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_CODE = "code";
-    public static final String COLUMN_LECTURER = "lecturer";
-    public static final String COLUMN_PAGES = "pages";
 
     private static final Connection conn = Database.getConn();
 
@@ -29,7 +23,7 @@ public class UnitController {
         ResultSet results = null;
 
         try {
-            String sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_UNITS, COLUMN_UUID);
+            String sqlStatement = "SELECT * FROM users INNER JOIN units ON users.user_id=_user WHERE unit_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid);
             results = statement.executeQuery();
@@ -58,21 +52,20 @@ public class UnitController {
 
         try {
             // create users table if it does not exist
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE, %s UUID primary key, %s TEXT, %s TEXT, %s TEXT, %s INTEGER)",
-                    TABLE_UNITS, COLUMN_UUID, COLUMN_NAME, COLUMN_CODE, COLUMN_LECTURER, COLUMN_PAGES);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS units (id SERIAL UNIQUE, unit_id UUID primary key, _user UUID references users(user_id), name TEXT, code TEXT, lecturer TEXT, pages INTEGER)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             // first check if a user exists
             if (!checkUnitExists(unit.getUuid())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?)",
-                        TABLE_UNITS, COLUMN_UUID, COLUMN_NAME, COLUMN_CODE, COLUMN_LECTURER, COLUMN_PAGES);
+                sqlStatement = "INSERT INTO units (unit_id, _user, name, code, lecturer, pages) VALUES (?, ?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, unit.getUuid());
-                statement.setString(2, unit.getName());
-                statement.setString(3, unit.getCode());
-                statement.setString(4, unit.getLecturer());
-                statement.setInt(5, unit.getPages());
+                statement.setObject(2, unit.getUser().getUserId());
+                statement.setString(3, unit.getName());
+                statement.setString(4, unit.getCode());
+                statement.setString(5, unit.getLecturer());
+                statement.setInt(6, unit.getPages());
                 statement.executeUpdate();
             }
 
@@ -100,15 +93,19 @@ public class UnitController {
 
         try {
             if(checkUnitExists(uuid)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_UNITS, COLUMN_UUID);
+                sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user WHERE unit_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
 
                 results.next();
-                return new Unit((UUID) results.getObject(COLUMN_UUID), results.getString(COLUMN_NAME), results.getString(COLUMN_CODE),
-                        results.getString(COLUMN_LECTURER), results.getInt(COLUMN_PAGES));
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+                return new Unit((UUID) results.getObject("unit_id"), user, results.getString("name"), results.getString("code"),
+                        results.getString("lecturer"), results.getInt("pages"));
 
 
             } else {
@@ -139,14 +136,18 @@ public class UnitController {
 
 
         try {
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_UNITS);
+            sqlStatement = "SELECT * FROM units INNER JOIN users ON users.user_id=_user";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             List<Unit> users = new ArrayList<>();
             while(results.next()){
-                Unit unit = new Unit((UUID) results.getObject(COLUMN_UUID), results.getString(COLUMN_NAME), results.getString(COLUMN_CODE),
-                        results.getString(COLUMN_LECTURER), results.getInt(COLUMN_PAGES));
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+                Unit unit = new Unit((UUID) results.getObject("unit_id"), user, results.getString("name"), results.getString("code"),
+                        results.getString("lecturer"), results.getInt("pages"));
                 users.add(unit);
             }
             return users;
@@ -176,8 +177,7 @@ public class UnitController {
 
         try {
             if (checkUnitExists(unit.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=? WHERE %s=?",
-                        TABLE_UNITS, COLUMN_NAME, COLUMN_CODE, COLUMN_LECTURER, COLUMN_PAGES, COLUMN_UUID);
+                sqlStatement = "UPDATE units SET name=?, code=?, lecturer=?, pages=? WHERE unit_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setString(1, unit.getName());
                 statement.setString(2, unit.getCode());
@@ -208,7 +208,7 @@ public class UnitController {
 
         assert conn != null;
         PreparedStatement statement = null;
-        String sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_UNITS, COLUMN_UUID);
+        String sqlStatement = "DELETE FROM units WHERE unit_id=?";
 
         try {
             if(checkUnitExists(unit.getUuid())) {
@@ -240,7 +240,7 @@ public class UnitController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s CASCADE", TABLE_UNITS);
+            sqlStatement = "DROP TABLE IF EXISTS units CASCADE";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

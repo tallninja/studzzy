@@ -3,6 +3,7 @@ package application.controllers;
 import application.models.Cat;
 import application.models.Database;
 import application.models.Unit;
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,13 +13,6 @@ import java.util.List;
 import java.util.UUID; // Universally Unique ID
 
 public class CatController {
-
-    private static final String TABLE_UNITS="units";
-    private static final String TABLE_CATS = "cats";
-    private static final String COLUMN_UUID = "uuid";
-    private static final String COLUMN_UNIT = "unit";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_TYPE = "type";
 
     private static final Connection conn = Database.getConn();
     private static PreparedStatement statement = null;
@@ -31,7 +25,7 @@ public class CatController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_CATS, COLUMN_UUID);
+            sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE cat_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid);
             results = statement.executeQuery();
@@ -61,20 +55,18 @@ public class CatController {
 
         try {
 
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE, " +
-                                        "%s UUID primary key, %s UUID references units(uuid), %s DATE, %s INTEGER)",
-                                        TABLE_CATS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS cats (id SERIAL UNIQUE, cat_id UUID primary key, _user UUID references users(user_id), unit UUID references units(unit_id), date DATE, type INTEGER)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkCatExists(cat.getUuid())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-                                            TABLE_CATS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
+                sqlStatement = "INSERT INTO cats (cat_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());
-                statement.setObject(2, cat.getUnitObject().getUuid());
-                statement.setDate(3, cat.getDate());
-                statement.setInt(4, cat.getTypeInt());
+                statement.setObject(2, cat.getUser().getUserId());
+                statement.setObject(3, cat.getUnitObject().getUuid());
+                statement.setDate(4, cat.getDate());
+                statement.setInt(5, cat.getTypeInt());
                 statement.executeUpdate();
             }
 
@@ -101,17 +93,22 @@ public class CatController {
         try {
 
             if (checkCatExists(uuid)) {
-                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, cats.uuid, cats.unit, cats.date, cats.type FROM units INNER JOIN cats ON units.uuid=unit WHERE cats.uuid=?";
+                sqlStatement = "SELECT * FROM cats INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE cats.cat_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                        Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
-                                        results.getString("code"), results.getString("lecturer"),
-                                        results.getInt("pages"));
+                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                            results.getString("registration_number"), results.getString("university"),
+                            results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                            results.getString("email"), results.getString("password"));
 
-                    return new Cat((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
+                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
+                                    results.getString("code"), results.getString("lecturer"),
+                                    results.getInt("pages"));
+
+                    return new Cat((UUID) results.getObject("cat_id"), user, unit, results.getDate("date"), results.getInt("type"));
                 } else {
                     return null;
                 }
@@ -148,12 +145,17 @@ public class CatController {
             results = statement.executeQuery();
 
             while (results.next()) {
-                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+
+                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                cats.add(new Cat((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE),
-                                        results.getInt(COLUMN_TYPE)));
+                cats.add(new Cat((UUID) results.getObject("cat_id"), user, unit, results.getDate("date"),
+                                        results.getInt("type")));
             }
 
             return cats;
@@ -182,7 +184,7 @@ public class CatController {
         try {
 
             if(checkCatExists(cat.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=? WHERE %s=?", TABLE_CATS, COLUMN_DATE, COLUMN_UNIT, COLUMN_TYPE, COLUMN_UUID);
+                sqlStatement = "UPDATE cats SET date=?, unit=?, type=? WHERE cat_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setDate(1, cat.getDate());
                 statement.setObject(2, cat.getUnitObject().getUuid());
@@ -214,7 +216,7 @@ public class CatController {
         try {
 
             if (checkCatExists(cat.getUuid())) {
-                sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_CATS, COLUMN_UUID);
+                sqlStatement = "DELETE FROM cats WHERE cat_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, cat.getUuid());
                 statement.executeUpdate();
@@ -234,31 +236,6 @@ public class CatController {
 
     }
 
-    // delete CATs table
-    public static void deleteAll() {
-
-        assert conn != null;
-        String sqlStatement;
-
-        try {
-
-            sqlStatement = String.format("DELETE FROM %s WHERE %s=*", TABLE_CATS, COLUMN_UUID);
-            statement = conn.prepareStatement(sqlStatement);
-            statement.execute();
-
-        } catch (Exception e) {
-            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-            }
-        }
-
-    }
 
     // delete CATs table
     public static void dropTable() {
@@ -268,7 +245,7 @@ public class CatController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s", TABLE_CATS);
+            sqlStatement = "DROP TABLE IF EXISTS cats";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

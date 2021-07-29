@@ -8,14 +8,15 @@ import java.util.UUID;
 public class Exam extends Test {
 
     private UUID uuid;
+    private User user;
 
-    public Exam(UUID uuid, Unit unit, Date date) {
-        super(unit, date);
+    public Exam(UUID uuid, User user, Unit unit, Date date) {
+        super(user, unit, date);
         this.setUuid(uuid);
     }
 
-    public Exam(Unit unit, Date date) {
-        super(unit, date);
+    public Exam(User user, Unit unit, Date date) {
+        super(user, unit, date);
         this.setUuid(UUID.randomUUID());
     }
 
@@ -37,7 +38,7 @@ public class Exam extends Test {
     @Override
     public void  setReminder() {
         String description = String.format("%s EXAM", this.getUnitObject().getName());
-        Reminder reminder = new Reminder(description, this.getDate());
+        Reminder reminder = new Reminder(this.getUser(), description, this.getDate());
         reminder.save();
     }
 

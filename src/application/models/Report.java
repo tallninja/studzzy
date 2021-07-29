@@ -13,16 +13,17 @@ public class Report extends  Submission {
     * */
 
     private UUID uuid;
+    private User user;
     private int type;
 
-    public Report(UUID uuid, Unit unit, Date date, int type) {
-        super(unit, date);
+    public Report(UUID uuid, User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Report(Unit unit, Date date, int type) {
-        super(unit, date);
+    public Report(User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
     }
@@ -46,7 +47,7 @@ public class Report extends  Submission {
     @Override
     public void  setReminder() {
         String description = String.format("%s REPORT", this.getUnitObject().getName());
-        Reminder reminder = new Reminder(description, this.getDate());
+        Reminder reminder = new Reminder(this.getUser(), description, this.getDate());
         reminder.save();
     }
 

@@ -3,6 +3,7 @@ package application.controllers;
 import application.models.Assignment;
 import application.models.Database;
 import application.models.Unit;
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +13,6 @@ import java.util.List;
 import java.util.UUID; // Universally Unique ID
 
 public class AssignmentController {
-
-    private static final String TABLE_ASSIGNMENTS = "assignments";
-    private static final String COLUMN_UUID = "uuid";
-    private static final String COLUMN_UNIT = "unit";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_TYPE = "type";
 
     private static final Connection conn = Database.getConn();
     private static PreparedStatement statement = null;
@@ -30,7 +25,7 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_UUID);
+            sqlStatement = "SELECT * FROM assignments INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit WHERE assignment_id=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setObject(1, uuid);
             results = statement.executeQuery();
@@ -60,20 +55,18 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE, " +
-                            "%s UUID primary key, %s UUID references units(uuid), %s DATE, %s INTEGER)",
-                    TABLE_ASSIGNMENTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS assignments (id SERIAL UNIQUE, assignment_id UUID primary key, _user UUID references users(user_id), unit UUID references units(uuid), date DATE, type INTEGER)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
-                        TABLE_ASSIGNMENTS, COLUMN_UUID, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE);
+                sqlStatement = "INSERT INTO assignments (cat_id, _user, unit, date, type) VALUES (?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUuid());
-                statement.setObject(2, assignment.getUnitObject().getUuid());
-                statement.setDate(3, assignment.getDate());
-                statement.setInt(4, assignment.getTypeInt());
+                statement.setObject(2, assignment.getUser().getUserId());
+                statement.setObject(3, assignment.getUnitObject().getUuid());
+                statement.setDate(4, assignment.getDate());
+                statement.setInt(5, assignment.getTypeInt());
                 statement.executeUpdate();
             }
 
@@ -100,17 +93,22 @@ public class AssignmentController {
         try {
 
             if (checkAssignmentExists(uuid)) {
-                sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, assignments.uuid, assignments.unit, assignments.date, assignments.type FROM units INNER JOIN assignments ON units.uuid=unit WHERE assignments.uuid=?";
+                sqlStatement = "SELECT * FROM assignments INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.units_id=unit WHERE assignments.assignment_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, uuid);
                 results = statement.executeQuery();
 
                 if (results.next()) {
-                    Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                    User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                            results.getString("registration_number"), results.getString("university"),
+                            results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                            results.getString("email"), results.getString("password"));
+
+                    Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
                             results.getString("code"), results.getString("lecturer"),
                             results.getInt("pages"));
 
-                    return new Assignment((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE), results.getInt(COLUMN_TYPE));
+                    return new Assignment((UUID) results.getObject("assignment_id"), user, unit, results.getDate("date"), results.getInt("type"));
                 } else {
                     return null;
                 }
@@ -142,17 +140,22 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = "SELECT units.name, units.code, units.lecturer, units.pages, assignments.uuid, assignments.unit, assignments.date, assignments.type FROM units INNER JOIN assignments ON units.uuid=unit";
+            sqlStatement = "SELECT * FROM assignments INNER JOIN users ON users.user_id=_user INNER JOIN units ON units.unit_id=unit";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             while (results.next()) {
-                Unit unit = new Unit((UUID) results.getObject(COLUMN_UNIT), results.getString("name"),
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
+
+                Unit unit = new Unit((UUID) results.getObject("unit"), user, results.getString("name"),
                         results.getString("code"), results.getString("lecturer"),
                         results.getInt("pages"));
 
-                cats.add(new Assignment((UUID) results.getObject(COLUMN_UUID), unit, results.getDate(COLUMN_DATE),
-                        results.getInt(COLUMN_TYPE)));
+                cats.add(new Assignment((UUID) results.getObject("assignment_id"), user, unit, results.getDate("date"),
+                        results.getInt("type")));
             }
 
             return cats;
@@ -181,7 +184,7 @@ public class AssignmentController {
         try {
 
             if(checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=? WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_UNIT, COLUMN_DATE, COLUMN_TYPE, COLUMN_UUID);
+                sqlStatement = "UPDATE assignments SET unit=?, date=?, %s=? WHERE assignment_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUnitObject().getUuid());
                 statement.setDate(2, assignment.getDate());
@@ -213,7 +216,7 @@ public class AssignmentController {
         try {
 
             if (checkAssignmentExists(assignment.getUuid())) {
-                sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_ASSIGNMENTS, COLUMN_UUID);
+                sqlStatement = "DELETE FROM assignments WHERE assignment_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setObject(1, assignment.getUuid());
                 statement.executeUpdate();
@@ -233,31 +236,6 @@ public class AssignmentController {
 
     }
 
-    // delete Assignments table
-    public static void deleteAll() {
-
-        assert conn != null;
-        String sqlStatement;
-
-        try {
-
-            sqlStatement = String.format("DELETE FROM %s WHERE %s=*", TABLE_ASSIGNMENTS, COLUMN_UUID);
-            statement = conn.prepareStatement(sqlStatement);
-            statement.execute();
-
-        } catch (Exception e) {
-            System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Exception e) {
-                System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
-            }
-        }
-
-    }
 
     // delete Assignments table
     public static void dropTable() {
@@ -267,7 +245,7 @@ public class AssignmentController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s", TABLE_ASSIGNMENTS);
+            sqlStatement = "DROP TABLE IF EXISTS assignments";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

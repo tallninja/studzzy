@@ -7,18 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserController {
-
-    public static final String TABLE_USERS = "users";
-    public static final String COLUMN_FIRST_NAME = "first_name";
-    public static final String COLUMN_LAST_NAME = "last_name";
-    public static final String COLUMN_REGISTRATION_NUMBER = "registration_number";
-    public static final String COLUMN_UNIVERSITY = "university";
-    public static final String COLUMN_START_SEM_DATE = "start_sem_date";
-    public static final String COLUMN_END_SEM_DATE = "end_sem_date";
-    public static final String COLUMN_EMAIL = "email";
-    public static final String COLUMN_PASSWORD = "password";
 
     private static final Connection conn = Database.getConn();
     private static PreparedStatement statement = null;
@@ -30,7 +21,7 @@ public class UserController {
         assert conn != null;
 
         try {
-            String sqlStatement = String.format("SELECT * FROM %s WHERE email=?", TABLE_USERS);
+            String sqlStatement = "SELECT * FROM users WHERE email=?";
             statement = conn.prepareStatement(sqlStatement);
             statement.setString(1, email);
             results = statement.executeQuery();
@@ -58,23 +49,22 @@ public class UserController {
 
         try {
 
-            sqlStatement = String.format("CREATE TABLE IF NOT EXISTS %s (id SERIAL UNIQUE primary key, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s DATE, %s DATE, %s TEXT, %s TEXT)",
-                    TABLE_USERS, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_REGISTRATION_NUMBER, COLUMN_UNIVERSITY, COLUMN_START_SEM_DATE, COLUMN_END_SEM_DATE, COLUMN_EMAIL, COLUMN_PASSWORD);
+            sqlStatement = "CREATE TABLE IF NOT EXISTS users (id SERIAL UNIQUE, user_id UUID primary key, first_name TEXT, last_name TEXT, registration_number TEXT, university TEXT, start_sem_date DATE, end_sem_date DATE, email TEXT, password TEXT)";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 
             if (!checkUserExists(user.getEmail())) {
-                sqlStatement = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        TABLE_USERS, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_REGISTRATION_NUMBER, COLUMN_UNIVERSITY, COLUMN_START_SEM_DATE, COLUMN_END_SEM_DATE, COLUMN_EMAIL, COLUMN_PASSWORD);
+                sqlStatement = "INSERT INTO users (user_id, first_name, last_name, registration_number, university, start_sem_date, end_sem_date, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setString(1, user.getFirstName());
-                statement.setString(2, user.getLastName());
-                statement.setString(3, user.getRegistrationNumber());
-                statement.setString(4, user.getUniversity());
-                statement.setDate(5, user.getStartSemDate());
-                statement.setDate(6, user.getEndSemDate());
-                statement.setString(7, user.getEmail());
-                statement.setString(8, user.getPassword());
+                statement.setObject(1, user.getUserId());
+                statement.setString(2, user.getFirstName());
+                statement.setString(3, user.getLastName());
+                statement.setString(4, user.getRegistrationNumber());
+                statement.setString(5, user.getUniversity());
+                statement.setDate(6, user.getStartSemDate());
+                statement.setDate(7, user.getEndSemDate());
+                statement.setString(8, user.getEmail());
+                statement.setString(9, user.getPassword());
                 statement.executeUpdate();
             }
 
@@ -92,30 +82,27 @@ public class UserController {
     }
 
     // gets a single user
-    public static @Nullable
-    User getUser(String email) {
+    public static User getUser(UUID userId) {
 
         assert conn != null;
         String sqlStatement;
 
         try {
-            if(checkUserExists(email)) {
-                sqlStatement = String.format("SELECT * FROM %s WHERE %s=?", TABLE_USERS, COLUMN_EMAIL);
-                statement = conn.prepareStatement(sqlStatement);
-                statement.setString(1, email);
-                results = statement.executeQuery();
+
+            sqlStatement = "SELECT * FROM users WHERE user_id=?";
+            statement = conn.prepareStatement(sqlStatement);
+            statement.setObject(1, userId);
+            results = statement.executeQuery();
 
 
-                results.next();
-                return new User(results.getString(COLUMN_FIRST_NAME), results.getString(COLUMN_LAST_NAME),
-                        results.getString(COLUMN_REGISTRATION_NUMBER), results.getString(COLUMN_UNIVERSITY),
-                        results.getDate(COLUMN_START_SEM_DATE), results.getDate(COLUMN_END_SEM_DATE),
-                        results.getString(COLUMN_EMAIL), results.getString(COLUMN_PASSWORD));
+            results.next();
+            return new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                    results.getString("registration_number"), results.getString("university"),
+                    results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                    results.getString("email"), results.getString("password"));
 
 
-            } else {
-                return null;
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
             System.err.printf("%s: %s", e.getClass().getName(), e.getMessage());
@@ -140,16 +127,16 @@ public class UserController {
         ResultSet results = null;
 
         try {
-            sqlStatement = String.format("SELECT * FROM %s", TABLE_USERS);
+            sqlStatement = "SELECT * FROM users";
             statement = conn.prepareStatement(sqlStatement);
             results = statement.executeQuery();
 
             List<User> users = new ArrayList<>();
             while(results.next()){
-                User user = new User(results.getString(COLUMN_FIRST_NAME), results.getString(COLUMN_LAST_NAME),
-                        results.getString(COLUMN_REGISTRATION_NUMBER), results.getString(COLUMN_UNIVERSITY),
-                        results.getDate(COLUMN_START_SEM_DATE), results.getDate(COLUMN_END_SEM_DATE),
-                        results.getString(COLUMN_EMAIL), results.getString(COLUMN_PASSWORD));
+                User user = new User((UUID) results.getObject("user_id"), results.getString("first_name"), results.getString("last_name"),
+                        results.getString("registration_number"), results.getString("university"),
+                        results.getDate("start_sem_date"), results.getDate("end_sem_date"),
+                        results.getString("email"), results.getString("password"));
                 users.add(user);
             }
             return users;
@@ -177,9 +164,7 @@ public class UserController {
 
         try {
             if (checkUserExists(user.getEmail())) {
-                sqlStatement = String.format("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=?, %s=? WHERE %s=?",
-                        TABLE_USERS, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_REGISTRATION_NUMBER, COLUMN_UNIVERSITY,
-                        COLUMN_START_SEM_DATE, COLUMN_END_SEM_DATE, COLUMN_EMAIL);
+                sqlStatement = "UPDATE users SET first_name=?, last_name=?, registration_number=?, university=?, start_sem_date=?, end_sem_date=? WHERE user_id=?";
                 statement = conn.prepareStatement(sqlStatement);
                 statement.setString(1, user.getFirstName());
                 statement.setString(2, user.getLastName());
@@ -187,7 +172,7 @@ public class UserController {
                 statement.setString(4, user.getUniversity());
                 statement.setDate(5, user.getStartSemDate());
                 statement.setDate(6, user.getEndSemDate());
-                statement.setString(7, user.getEmail());
+                statement.setObject(7, user.getUserId());
                 statement.executeUpdate();
             } else {
                 System.out.println("User does not exist !");
@@ -215,9 +200,9 @@ public class UserController {
 
         try {
             if(checkUserExists(user.getEmail())) {
-                sqlStatement = String.format("DELETE FROM %s WHERE %s=?", TABLE_USERS, COLUMN_EMAIL);
+                sqlStatement = "DELETE FROM users WHERE user_id=?";
                 statement = conn.prepareStatement(sqlStatement);
-                statement.setString(1, user.getEmail());
+                statement.setObject(1, user.getUserId());
                 statement.executeUpdate();
             } else {
                 System.out.println("User does not exist");
@@ -243,7 +228,7 @@ public class UserController {
 
         try {
 
-            sqlStatement = String.format("DROP TABLE IF EXISTS %s", TABLE_USERS);
+            sqlStatement = "DROP TABLE IF EXISTS users";
             statement = conn.prepareStatement(sqlStatement);
             statement.execute();
 

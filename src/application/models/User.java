@@ -4,9 +4,11 @@ import application.controllers.UserController;
 import application.controllers.utils.Password;
 
 import java.sql.Date;
+import java.util.UUID;
 
 public class User {
 
+    private UUID userId;
     private String firstName;
     private String lastName;
     private String registrationNumber;
@@ -16,7 +18,20 @@ public class User {
     private String email;
     private String password;
 
+    public User(UUID userId, String firstName, String lastName, String registrationNumber, String university, Date startSemDate, Date endSemDate, String email, String password) {
+        this.setUserId(userId);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setRegistrationNumber(registrationNumber);
+        this.setUniversity(university);
+        this.setStartSemDate(startSemDate);
+        this.setEndSemDate(endSemDate);
+        this.setEmail(email);
+        this.setPassword(password);
+    }
+
     public User(String firstName, String lastName, String registrationNumber, String university, Date startSemDate, Date endSemDate, String email, String password) {
+        this.setUserId(UUID.randomUUID());
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setRegistrationNumber(registrationNumber);
@@ -50,6 +65,14 @@ public class User {
     public String toString() {
         return String.format("User{'firstName': %s, 'lastName': %s, 'registrationNumber': %s, 'university': %s, 'startSemDate': %s, 'endSemDate': %s, 'email': %s, 'password': %s}",
                 this.getFirstName(), this.getLastName(), this.getRegistrationNumber(), this.getUniversity(), this.getStartSemDate(), this.getEndSemDate(), this.getEmail(), this.getPassword());
+    }
+
+    public UUID getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {

@@ -8,12 +8,22 @@ import java.util.UUID;
 
 public class Submission implements Remindable {
 
+    private User user;
     private Unit unit;
     private Date date;
 
-    public Submission(Unit unit, Date date) {
+    public Submission(User user, Unit unit, Date date) {
+        this.setUser(user);
         this.setUnit(unit);
         this.setDate(date);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getUnit() {

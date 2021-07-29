@@ -10,14 +10,14 @@ public class Cat extends Test {
     private UUID uuid;
     private int type;
 
-    public Cat(UUID uuid, Unit unit, Date date, int type) {
-        super(unit, date);
+    public Cat(UUID uuid, User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(uuid);
         this.setType(type);
     }
 
-    public Cat(Unit unit, Date date, int type) {
-        super(unit, date);
+    public Cat(User user, Unit unit, Date date, int type) {
+        super(user, unit, date);
         this.setUuid(UUID.randomUUID());
         this.setType(type);
     }
@@ -57,7 +57,7 @@ public class Cat extends Test {
     @Override
     public void  setReminder() {
         String description = String.format("%s CAT", this.getUnitObject().getName());
-        Reminder reminder = new Reminder(description, this.getDate());
+        Reminder reminder = new Reminder(this.getUser(), description, this.getDate());
         reminder.save();
     }
 

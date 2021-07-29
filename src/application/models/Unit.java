@@ -6,13 +6,15 @@ import java.util.UUID;
 
 public class Unit {
 
+    private User user;
     private UUID uuid;
     private String name;
     private String code;
     private String lecturer;
     private int pages;
 
-    public Unit(UUID uuid, String name, String code, String lecturer, int pages) {
+    public Unit(UUID uuid, User user, String name, String code, String lecturer, int pages) {
+        this.setUser(user);
         this.setUuid(uuid);
         this.setName(name);
         this.setCode(code);
@@ -34,7 +36,6 @@ public class Unit {
     }
 
     public void update(String name, String code, String lecturer, int pages) {
-        this.setUuid(this.getUuid());
         this.setName(name);
         this.setCode(code);
         this.setLecturer(lecturer);
@@ -49,6 +50,14 @@ public class Unit {
     @Override
     public String toString() {
         return this.getName();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public UUID getUuid() {

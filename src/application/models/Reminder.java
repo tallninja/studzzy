@@ -8,17 +8,20 @@ import java.util.UUID;
 public class Reminder {
 
     private UUID uuid;
+    private User user;
     private String description;
     private Date date;
 
-    public Reminder(UUID uuid, String description, Date reminderDate) {
+    public Reminder(UUID uuid, User user, String description, Date reminderDate) {
+        this.setUser(user);
         this.setUuid(uuid);
         this.setDescription(description);
         this.setDate(reminderDate);
     }
 
-    public Reminder(String description, Date reminderDate) {
+    public Reminder(User user, String description, Date reminderDate) {
         this.setUuid(UUID.randomUUID());
+        this.setUser(user);
         this.setDescription(description);
         this.setDate(reminderDate);
     }
@@ -33,10 +36,6 @@ public class Reminder {
         ReminderController.editReminder(this);
     }
 
-    public static void setReminder(String description, Date date) {
-        ReminderController.saveReminder(new Reminder(UUID.randomUUID(), description, date));
-    }
-
     public void delete() {
         ReminderController.deleteReminder(this);
     }
@@ -44,6 +43,14 @@ public class Reminder {
     @Override
     public String toString() {
         return String.format("Reminder{'date': %s, 'description': %s}", this.getDate(), this.getDescription());
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public UUID getUuid() {
