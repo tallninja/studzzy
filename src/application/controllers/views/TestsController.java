@@ -3,10 +3,12 @@ package application.controllers.views;
 import application.controllers.CatController;
 import application.controllers.ExamController;
 import application.controllers.UnitController;
+import application.controllers.UserController;
 import application.controllers.utils.DateStringConverter;
 import application.models.Cat;
 import application.models.Exam;
 import application.models.Unit;
+import application.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -311,8 +313,9 @@ public class TestsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(catDatePicker.getValue()));
             int type = catTypesCombo.getValue().equals("Sitting") ? 1 : 2;
 
-//            Cat cat = new Cat(unit, date, type);
-//            cat.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Cat cat = new Cat(user, unit, date, type);
+            cat.save();
             refreshView(event);
         }
     }
@@ -325,8 +328,9 @@ public class TestsController implements Initializable {
             Unit unit = examUnitsCombo.getValue();
             Date date = new Date(dateStringConverter.toMills(examDatePicker.getValue()));
 
-//            Exam exam = new Exam(unit, date);
-//            exam.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Exam exam = new Exam(user, unit, date);
+            exam.save();
             refreshView(event);
         }
     }
@@ -482,6 +486,7 @@ public class TestsController implements Initializable {
 
     // logout a user
     public void logoutUser(ActionEvent event) throws IOException {
+        SessionController.deleteSession();
         setView("Login.fxml", event);
     }
 

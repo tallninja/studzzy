@@ -1,7 +1,9 @@
 package application.controllers.views;
 
 import application.controllers.UnitController;
+import application.controllers.UserController;
 import application.models.Unit;
+import application.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -203,8 +205,9 @@ public class UnitsController implements Initializable {
         int numOfPages = numberOfPagesField.getValue();
 
         if (!unitName.equals("") && !unitCode.equals("") && !unitLecturer.equals("")) {
-//            Unit unit = new Unit(unitName, unitCode, unitLecturer, numOfPages);
-//            unit.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Unit unit = new Unit(user, unitName, unitCode, unitLecturer, numOfPages);
+            unit.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         }
@@ -303,6 +306,7 @@ public class UnitsController implements Initializable {
     }
 
     public void logoutUser(ActionEvent event) throws IOException {
+        SessionController.deleteSession();
         setView("Login.fxml", event);
     }
 

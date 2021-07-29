@@ -3,10 +3,12 @@ package application.controllers.views;
 import application.controllers.ReportController;
 import application.controllers.AssignmentController;
 import application.controllers.UnitController;
+import application.controllers.UserController;
 import application.controllers.utils.DateStringConverter;
 import application.models.Report;
 import application.models.Assignment;
 import application.models.Unit;
+import application.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -325,8 +327,9 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(reportDatePicker.getValue()));
             int type = reportTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-//            Report report = new Report(unit, date, type);
-//            report.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Report report = new Report(user, unit, date, type);
+            report.save();
             refreshView(event);
         }
     }
@@ -340,8 +343,9 @@ public class SubmissionsController implements Initializable {
             Date date = new Date(dateStringConverter.toMills(assignmentDatePicker.getValue()));
             int type = assignmentTypesCombo.getValue().equals("Individual") ? 1 : 2;
 
-//            Assignment assignment = new Assignment(unit, date, type);
-//            assignment.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Assignment assignment = new Assignment(user, unit, date, type);
+            assignment.save();
             refreshView(event);
         }
     }
@@ -505,6 +509,7 @@ public class SubmissionsController implements Initializable {
 
     // logout a user
     public void logoutUser(ActionEvent event) throws IOException {
+        SessionController.deleteSession();
         setView("Login.fxml", event);
     }
 

@@ -2,9 +2,11 @@ package application.controllers.views;
 
 import application.controllers.ReminderController;
 import application.controllers.UnitController;
+import application.controllers.UserController;
 import application.controllers.utils.DateStringConverter;
 import application.models.Reminder;
 import application.models.Unit;
+import application.models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -181,8 +183,9 @@ public class RemindersController implements Initializable {
             String description = reminderDescriptionTextArea.getText();
             Date date = new Date(dateStringConverter.toMills(reminderDatePicker.getValue()));
 
-//            Reminder reminder = new Reminder(description, date);
-//            reminder.save();
+            User user = UserController.getUser(SessionController.getSession());
+            Reminder reminder = new Reminder(user, description, date);
+            reminder.save();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         }
@@ -262,6 +265,7 @@ public class RemindersController implements Initializable {
     }
 
     public void logoutUser(ActionEvent event) throws IOException {
+        SessionController.deleteSession();
         setView("Login.fxml", event);
     }
 

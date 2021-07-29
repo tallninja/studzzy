@@ -214,6 +214,7 @@ public class LoungeController implements Initializable {
     }
 
     public void logoutUser(ActionEvent event) throws IOException {
+        SessionController.deleteSession();
         setView("Login.fxml", event);
     }
 

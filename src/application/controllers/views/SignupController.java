@@ -51,18 +51,18 @@ public class SignupController {
 
         if (checkAllFieldsHaveValues()) {
 
-            DateStringConverter stringToDateFormater = new DateStringConverter();
+            DateStringConverter stringToDateFormatter = new DateStringConverter();
 //            System.out.println(startSemDatePicker.getValue().toString());
 //            System.out.println(endSemDatePicker.getValue().toString());
 
-            Date startSemDate = new Date(stringToDateFormater.toMills(startSemDatePicker.getValue()));
-            Date endSemDate = new Date(stringToDateFormater.toMills(endSemDatePicker.getValue()));
+            Date startSemDate = new Date(stringToDateFormatter.toMills(startSemDatePicker.getValue()));
+            Date endSemDate = new Date(stringToDateFormatter.toMills(endSemDatePicker.getValue()));
 
             User user = new User(firstNameField.getText(), lastNameField.getText(), regField.getText(), universityField.getText(),
                     startSemDate, endSemDate, emailField.getText(), passwordField.getText());
             user.save();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/Login.fxml"));
             root = loader.load();
             scene = new Scene(root);
             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

@@ -38,6 +38,9 @@ public class LoginController {
         if (!emailField.getText().equals("") && !passwordField.getText().equals("")) {
 
             if (login(emailField.getText(), passwordField.getText())) {
+                User user = UserController.getUser(emailField.getText());
+                assert user != null;
+                SessionController.setSession(user.getUserId());
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/Home.fxml"));
                 root = loader.load();
